@@ -1,3 +1,5 @@
+"use strict";
+
 var p2r = require('path-to-regexp'),
     funcDeps = require('func-deps'),
     _ = require('lodash'),
@@ -15,14 +17,17 @@ function send(status, content) {
     res.end();
 }
 
-function Injector() {
+function RestInjector() {
+    if (typeof this === 'undefined') {
+        return new RestInjector();
+    }
     this.providers = [];
     this.singletons = [];
     this.values = [];
     this.handlers = [];
 }
 
-Injector.prototype.handleRequest = function handleRequest(req, res) {
+RestInjector.prototype.handleRequest = function handleRequest(req, res) {
     res.send = send;
     var index = 0;
     var handlers = _.clone(this.handlers);
@@ -47,32 +52,30 @@ Injector.prototype.handleRequest = function handleRequest(req, res) {
     next();
 };
 
-function handler(method) {
-    return function(route, handleRequest) {
-        if (typeof route === 'function') {
-            handleRequest = route;
-            route = '*';
-        }
-        var keys = [];
-        var route = p2r(route, keys);
-        this.handlers.push({
-            method: method,
-            keys: keys,
-            route: route,
-            handleRequest: handleRequest
-        });
-    };
+function addHandler(method, route, handleRequest) {
+    if (_.isFunction(route) || _.isArray(route)) {
+        handleRequest = route;
+        route = '*';
+    }
+    var keys = [];
+    var route = p2r(route, keys);
+    this.handlers.push({
+        method: method,
+        keys: keys,
+        route: route,
+        handleRequest: handleRequest
+    });
 }
 
-Injector.prototype.provide = function provide(depName, provider) {
+RestInjector.prototype.provide = function provide(depName, provider) {
     this.providers[depName] = provider;
 };
 
-Injector.prototype.singleton = function singleton(depName, func) {
+RestInjector.prototype.singleton = function singleton(depName, func) {
     this.singletons[depName] = func;
 };
 
-Injector.prototype.value = function value(depName, val) {
+RestInjector.prototype.value = function value(depName, val) {
     if (val) {
         this.values[depName] = val;
     } else {
@@ -80,19 +83,21 @@ Injector.prototype.value = function value(depName, val) {
     }
 };
 
-Injector.prototype.use = handler('ALL');
+RestInjector.prototype.use = addHandler.bind(null, 'ALL');
 
 var methods = ['get', 'post', 'put', 'patch', 'delete', 'copy',
                'head', 'options', 'link', 'unlink', 'purge', 'all'];
 
 _.forEach(methods, function(method) {
-    Injector.prototype[method] = handler(method.toUpperCase());
+    var methodUpper = method.toUpperCase();
+    RestInjector.prototype[method] = function() {
+        var args = [methodUpper].concat(Array.prototype.slice.apply(arguments));
+        addHandler.apply(this, args);
+    };
 });
 
-Injector.prototype.listen = function listen(port, cb) {
+RestInjector.prototype.listen = function listen(port, cb) {
     http.createServer(this.handleRequest.bind(this)).listen(port);
 };
 
-module.exports = function() {
-    return new Injector();
-};
+module.exports = RestInjector;
