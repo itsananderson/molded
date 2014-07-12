@@ -1,0 +1,21 @@
+{
+  "name": "rest-injector",
+  "version": "0.0.0",
+  "description": "REST server library with dependency injection",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rest",
+    "restful",
+    "di",
+    "ioc"
+  ],
+  "author": "Will Anderson",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "path-to-regexp": "^0.2.3"
+  }
+}
