@@ -59,11 +59,13 @@ function addHandler(method, route, handleRequest) {
     }
     var keys = [];
     var route = p2r(route, keys);
+    var deps = funcDeps(handleRequest);
     this.handlers.push({
         method: method,
         keys: keys,
         route: route,
-        handleRequest: handleRequest
+        handleRequest: deps.func,
+        deps: deps.deps
     });
 }
 
