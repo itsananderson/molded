@@ -76,7 +76,7 @@ Molded.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) 
     var resolvedDeps = [];
     _.forEach(depNames, function(dep, index) {
         var found = _.find(possibleDeps, function(possibleDep) {
-            if ('ALL' !== possibleDep.method && possibleDep.method !== req.method) {
+            if (!methodMatches(req.method, possibleDep.method)) {
                 return false;
             }
             return possibleDep.name == dep
@@ -120,6 +120,10 @@ function routeParams(route, url, keys) {
     }
 }
 
+function methodMatches(expected, actual) {
+    return 'ALL' === actual || expected === actual;
+}
+
 Molded.prototype.handleRequest = function handleRequest(req, res) {
     var self = this;
     res.send = send.bind(res);
@@ -127,7 +131,7 @@ Molded.prototype.handleRequest = function handleRequest(req, res) {
     function next() {
         if (handlers.length > 0) {
             var handler = handlers.shift();
-            if ('ALL' !== handler.method && handler.method !== req.method) {
+            if (!methodMatches(req.method, handler.method)) {
                 return next();
             }
             var params = handler.route.exec(req.url);
