@@ -54,16 +54,26 @@ function initialDep(name, value) {
 };
 
 function initialDeps(req, res, next) {
-    return [
-        initialDep('req', req),
-        initialDep('res', res),
-        initialDep('next', next)
-    ];
+    if (next) {
+        return [
+            initialDep('req', req),
+            initialDep('res', res),
+            initialDep('next', next)
+        ];
+    } else {
+        return [
+            initialDep('req', req),
+            initialDep('res', res)
+        ];
+    }
 }
 
 Molded.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) {
     var self = this;
     var possibleDeps = initialDeps.concat(this.providers);
+    var nextlessDeps = initialDeps.filter(function(dep) {
+        return dep.name !== 'next';
+    });
     var resolvedDeps = [];
     _.forEach(depNames, function(dep, index) {
         var found = _.find(possibleDeps, function(possibleDep) {
@@ -74,7 +84,7 @@ Molded.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) 
                 && null !== possibleDep.route.exec(req.url);
         });
         if (found) {
-            resolvedDeps.push(self.resolveAndCall(req, initialDeps, found));
+            resolvedDeps.push(self.resolveAndCall(req, nextlessDeps, found));
         } else {
             console.log(dep);
             throw Error('Unresolved dependency: ' + dep);
