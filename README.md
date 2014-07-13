@@ -1,29 +1,26 @@
-rest-injector
-=============
+molded
+======
 
 REST server library with dependency injection
-
-**NOTE: Name subject to change.
-If you have a better idea, I'm all ears.**
 
 Installation
 ---
 
 ```
-npm install rest-injector
+npm install molded
 ```
 
 Usage
 ---
 
-rest-injector attempts to be Connect middleware compatible.
+Molded attempts to be Connect middleware compatible.
 If you find something that isn't, please create an issue.
 
-With rest-injector, you define route handlers similar to the ones defined in Express.
+With Molded, you define route handlers similar to the ones defined in Express.
 
 ```javascript
-var injector = require('rest-injector');
-var app = injector();
+var molded = require('molded');
+var app = molded();
 
 app.get('/', function(req, res) {
     res.send({"welcome":"home"});
@@ -40,11 +37,11 @@ You can plug in Connect middleware like body-parser and serve-static.
 
 ```javascript
 var bodyParser = require('body-parser');
-var injector = require('rest-injector');
+var molded = require('molded');
 
 var users = [];
 
-var app = injector();
+var app = molded();
 
 app.use(bodyParser.json());
 

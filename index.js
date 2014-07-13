@@ -6,10 +6,9 @@ var p2r = require('path-to-regexp'),
     http = require('http'),
     util = require('util');
 
-
-function RestInjector() {
+function Molded() {
     if (typeof this === 'undefined') {
-        return new RestInjector();
+        return new Molded();
     }
     this.providers = [];
     this.singletons = [];
@@ -62,7 +61,7 @@ function initialDeps(req, res, next) {
     ];
 }
 
-RestInjector.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) {
+Molded.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) {
     var self = this;
     var possibleDeps = initialDeps.concat(this.providers);
     var resolvedDeps = [];
@@ -84,12 +83,12 @@ RestInjector.prototype.resolveDeps = function resolveDeps(req, initialDeps, depN
     return resolvedDeps;
 };
 
-RestInjector.prototype.resolveAndCall = function resolveAndCall(req, initialDeps, callback) {
+Molded.prototype.resolveAndCall = function resolveAndCall(req, initialDeps, callback) {
     var resolvedDeps = this.resolveDeps(req, initialDeps, callback.deps); 
     return callback.resolve.apply(null, resolvedDeps);
 };
 
-RestInjector.prototype.handleRequest = function handleRequest(req, res) {
+Molded.prototype.handleRequest = function handleRequest(req, res) {
     var self = this;
     res.send = send.bind(res);
     var handlers = _.clone(this.handlers);
@@ -137,7 +136,7 @@ function addHandler(method, route, handler) {
     });
 }
 
-RestInjector.prototype.provide = function provide(depName, provider) {
+Molded.prototype.provide = function provide(depName, provider) {
     var deps = funcDeps(provider);
     this.providers.push({
         method: 'ALL',
@@ -148,11 +147,11 @@ RestInjector.prototype.provide = function provide(depName, provider) {
     });
 };
 
-RestInjector.prototype.singleton = function singleton(depName, func) {
+Molded.prototype.singleton = function singleton(depName, func) {
     this.singletons[depName] = func;
 };
 
-RestInjector.prototype.value = function value(depName, val) {
+Molded.prototype.value = function value(depName, val) {
     if (val) {
         this.values[depName] = val;
     } else {
@@ -160,7 +159,7 @@ RestInjector.prototype.value = function value(depName, val) {
     }
 };
 
-RestInjector.prototype.use = function() {
+Molded.prototype.use = function() {
     var args = ['ALL'].concat(Array.prototype.slice.apply(arguments));
     addHandler.apply(this, args);
 };
@@ -170,14 +169,14 @@ var methods = ['get', 'post', 'put', 'patch', 'delete', 'copy',
 
 _.forEach(methods, function(method) {
     var methodUpper = method.toUpperCase();
-    RestInjector.prototype[method] = function() {
+    Molded.prototype[method] = function() {
         var args = [methodUpper].concat(Array.prototype.slice.apply(arguments));
         addHandler.apply(this, args);
     };
 });
 
-RestInjector.prototype.listen = function listen(port, cb) {
+Molded.prototype.listen = function listen(port, cb) {
     http.createServer(this.handleRequest.bind(this)).listen(port);
 };
 
-module.exports = RestInjector;
+module.exports = Molded;
