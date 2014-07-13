@@ -2,11 +2,14 @@
 
 var p2r = require('path-to-regexp'),
     funcDeps = require('func-deps'),
+    accepts = require('accepts'),
     _ = require('lodash'),
     http = require('http'),
     util = require('util');
 
-var coreProviderNames = ['send-json', 'send'];
+var coreProviderNames = [
+    'send-json', 'send',
+    'accepts', 'accepts-encodings', 'accepts-charsets'];
 var coreProviders = [];
 
 function dashToCamel(string) {

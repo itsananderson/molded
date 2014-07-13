@@ -49,6 +49,15 @@ app.get('/rand', function(send, randString) {
     send(randString);
 });
 
+app.get('/accepts', function(res, send, accepts, acceptsEncodings, acceptsCharsets) {
+    var stats =
+        'favored content type: ' + accepts('txt','html','xml') + '\n' + 
+        'favored encoding: ' + acceptsEncodings('gzip') + '\n' + 
+        'favored charset: ' + acceptsCharsets('utf8');
+    res.setHeader('Content-Type', 'text/plain');
+    send(stats);
+});
+
 app.use(serveIndex(__dirname));
 
 app.listen(app.value('port'));
