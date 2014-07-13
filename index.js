@@ -6,42 +6,32 @@ var p2r = require('path-to-regexp'),
     http = require('http'),
     util = require('util');
 
+var coreProviderNames = ['send-json', 'send'];
+var coreProviders = [];
+
+function dashToCamel(string) {
+    return string.replace(/\W+(.)/g, function (x, chr) {
+        return chr.toUpperCase();
+    });
+};
+
+coreProviderNames.forEach(function(providerName) {
+    var injectionName = dashToCamel(providerName);    
+    var provider = require('./providers/' + providerName);
+    coreProviders.push(
+        getProviderDefinition('ALL', /.*/, injectionName, provider()));
+});
+
 function Molded() {
     if (typeof this === 'undefined') {
         return new Molded();
     }
-    this.providers = [];
+    console.log(coreProviders);
+    this.providers = coreProviders;
     this.singletons = [];
     this.values = [];
     this.handlers = [];
     this.errorHandlers = [];
-}
-
-function send(status, content) {
-    var args = Array.prototype.slice.apply(arguments);
-    if (typeof status === 'number') {
-        this.statusCode = args.shift();
-    } else {
-        content = status;
-    }
-    if (typeof content === 'string') {
-        if (!this.headersSent && undefined === this.getHeader('content-type')) {
-            this.setHeader('Content-Type', 'text/html');
-        }
-        this.write(content);
-        this.end();
-    } else if (Buffer.isBuffer(content)) {
-        this.write(content);
-        this.end();
-    } else if (undefined === content) {
-        this.end('undefined');
-    } else {
-        if (!this.headersSent && undefined === this.getHeader('content-type')) {
-            this.setHeader('Content-Type', 'application/json');
-        }
-        this.write(JSON.stringify(content));
-        this.end();
-    }
 }
 
 function initialDep(name, value) {
@@ -131,7 +121,6 @@ function methodMatches(expected, actual) {
 
 Molded.prototype.handleRequest = function handleRequest(req, res) {
     var self = this;
-    res.send = send.bind(res);
     var handlers = _.clone(this.handlers);
     function next(err) {
         if (err) {
@@ -199,15 +188,20 @@ function addHandler(method, route, handler) {
     });
 }
 
-Molded.prototype.provide = function provide(depName, provider) {
-    var deps = funcDeps(provider);
-    this.providers.push({
+function getProviderDefinition(method, route, name, func) {
+    var deps = funcDeps(func);
+    return {
         method: 'ALL',
         route: /.*/,
-        name: depName,
+        name: name,
         deps: deps.deps,
         resolve: deps.func
-    });
+    };
+};
+
+Molded.prototype.provide = function provide(depName, provider) {
+    this.providers.push(
+        getProviderDefinition('ALL', /.*/, depName, provider));
 };
 
 Molded.prototype.singleton = function singleton(depName, func) {

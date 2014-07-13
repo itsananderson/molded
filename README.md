@@ -22,12 +22,12 @@ With Molded, you define route handlers similar to the ones defined in Express.
 var molded = require('molded');
 var app = molded();
 
-app.get('/', function(req, res) {
-    res.send({"welcome":"home"});
+app.get('/', function(req, send) {
+    send({"welcome":"home"});
 });
 
-app.get('/:name', function(req, res) {
-    res.send({"hello":req.params.name);
+app.get('/:name', function(req, sendJson) {
+    sendJson({"hello":req.params.name);
 });
 
 app.listen(3000);
@@ -45,13 +45,13 @@ var app = molded();
 
 app.use(bodyParser.json());
 
-app.get('/users', function(req, res) {
-    res.send(users);
+app.get('/users', function(sendJson) {
+    sendJson(users);
 });
 
-app.post('/register', function(req, res) {
+app.post('/register', function(req, sendJson) {
     users.push(req.body);
-    res.send({success:true});
+    sendJson({success:true});
 });
 
 app.listen(3000);
@@ -95,8 +95,8 @@ app.singleton('user1', function(users) {
     return users['user1'];
 });
 
-app.get('/me', function(res, user1) {
-    res.send(user1);
+app.get('/me', function(res, sendJson) {
+    sendJson(user1);
 });
 ```
 
@@ -119,22 +119,22 @@ app.singleton('Cat', function(db) {
 
 app.use(bodyParser.json());
 
-app.get('/kittens', function(res, Cat) {
+app.get('/kittens', function(sendJson, Cat) {
     Cat.find(function(err, kittens) {
         if (err) {
             return next(err);
         }
-        res.send(kittens);
+        sendJson(kittens);
     });
 });
 
-app.post('/kittens', function(req, res, Cat) {
+app.post('/kittens', function(req, sendJson, Cat) {
     var kitten = new Cat(req.body);
     kitten.save(function(err) {
         if (err) {
             return next(err);
         }
-        res.send({success:true});
+        sendJson({success:true});
     });
 });
 ```
@@ -151,9 +151,9 @@ app.provide('user', function(req, res, users) {
     return users[req.params.user];
 });
 
-app.get('/:user', function(req, res, next, user) {
+app.get('/:user', function(sendJson, next, user) {
     if (user) {
-        res.send(user);
+        sendJson(user);
     } else {
         next();
     }
@@ -176,8 +176,8 @@ app.get('/next', function(next) {
     next(Error('Something went wrong next'));
 });
 
-app.error(function(res, err)  {
+app.error(function(res, err, sendJson)  {
     res.statusCode = err.status || 500;
-    res.send({message: err.message, error: err});
+    sendJson({message: err.message, error: err});
 });
 ```

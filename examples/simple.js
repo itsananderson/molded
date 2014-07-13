@@ -12,7 +12,7 @@ app.singleton('single', function(port) {
     return 'port: ' + port;
 });
 
-app.provide('rand', function(single) {
+app.provide('randString', function(single) {
     return single + ' ' + Math.random();
 });
 
@@ -20,33 +20,33 @@ app.use(logger('dev'));
 app.use(serveStatic(__dirname));
 app.use(bodyParser.json());
 
-app.get('/greet/:name/:age', function(req, res) {
-    res.send('hello ' + req.params.name +
+app.get('/greet/:name/:age', function(req, send) {
+    send('hello ' + req.params.name +
         ' age ' + req.params.age);
 });
 
-app.get(/^\/foo\/bar(.*)$/, function(req, res) {
-    res.send(req.params[0]);
+app.get(/^\/foo\/bar(.*)$/, function(req, send) {
+    send(req.params[0]);
 });
 
-app.get('/json', function(req, res) {
-    res.send({here:'is',some:'json'});
+app.get('/json', function(req, sendJson) {
+    sendJson({here:'is',some:'json'});
 });
 
-app.post('/json', function(req, res) {
-    res.send(req.body);
+app.post('/json', function(req, sendJson) {
+    sendJson(req.body);
 });
 
-app.get('/port', function(req, res, port) {
-    res.send('' + port);
+app.get('/port', function(sendJson, port) {
+    sendJson(port);
 });
 
-app.get('/single', function(res, single) {
-    res.send(single);
+app.get('/single', function(send, single) {
+    send(single);
 });
 
-app.get('/rand', function(res, rand) {
-    res.send(rand);
+app.get('/rand', function(send, randString) {
+    send(randString);
 });
 
 app.use(serveIndex(__dirname));

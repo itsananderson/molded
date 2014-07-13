@@ -17,22 +17,22 @@ app.singleton('Cat', function(db) {
 
 app.use(bodyParser.json());
 
-app.get('/kittens', function(res, Cat) {
+app.get('/kittens', function(sendJson, Cat) {
     Cat.find(function(err, kittens) {
         if (err) {
             return next(err);
         }
-        res.send(kittens);
+        sendJson(kittens);
     });
 });
 
-app.post('/kittens', function(req, res, Cat) {
+app.post('/kittens', function(req, sendJson, Cat) {
     var kitten = new Cat(req.body);
     kitten.save(function(err) {
         if (err) {
             return next(err);
         }
-        res.send({success:true});
+        sendJson({success:true});
     });
 });
 

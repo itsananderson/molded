@@ -9,9 +9,9 @@ app.get('/next', function(next) {
     next(Error('Something went wrong next'));
 });
 
-app.error(function(res, err)  {
+app.error(function(sendJson, err)  {
     res.statusCode = err.status || 500;
-    res.send({message: err.message, error: err});
+    sendJson({message: err.message, error: err});
 });
 
 app.listen(3000);

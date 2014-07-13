@@ -20,13 +20,13 @@ app.provide('user', function(req, res, users) {
     return users[req.params.user];
 });
 
-app.get('/me', function(res, user1) {
-    res.send(user1);
+app.get('/me', function(sendJson, user1) {
+    sendJson(user1);
 });
 
-app.get('/:user', function(req, res, next, user) {
+app.get('/:user', function(sendJson, next, user) {
     if (user) {
-        res.send(user);
+        sendJson(user);
     } else {
         next();
     }

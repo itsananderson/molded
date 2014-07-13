@@ -7,13 +7,13 @@ var app = injector();
 
 app.use(bodyParser.json());
 
-app.get('/users', function(req, res) {
-    res.send(users);
+app.get('/users', function(sendJson) {
+    sendJson(users);
 });
 
-app.post('/register', function(req, res) {
+app.post('/register', function(req, sendJson) {
     users.push(req.body);
-    res.send({success:true});
+    sendJson{success:true});
 });
 
 app.listen(3000);
