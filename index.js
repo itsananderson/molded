@@ -6,16 +6,6 @@ var p2r = require('path-to-regexp'),
     http = require('http'),
     util = require('util');
 
-function send(status, content) {
-    var args = Array.prototype.slice.apply(arguments);
-    if (typeof status === 'number') {
-        req.status = args.shift();
-    } else {
-        content = status;
-    }
-    res.write.apply(res, arguments);
-    res.end();
-}
 
 function RestInjector() {
     if (typeof this === 'undefined') {
@@ -28,7 +18,21 @@ function RestInjector() {
 }
 
 RestInjector.prototype.handleRequest = function handleRequest(req, res) {
-    res.send = send;
+    res.send = function send(status, content) {
+        var args = Array.prototype.slice.apply(arguments);
+        if (typeof status === 'number') {
+            req.status = args.shift();
+        } else {
+            content = status;
+        }
+        if (typeof content === 'object') {
+            res.write(JSON.stringify(content));
+            res.end();
+        } else {
+            res.write.apply(res, args);
+            res.end();
+        }
+    }
     var handlers = _.clone(this.handlers);
     function next() {
         if (handlers.length > 0) {
