@@ -63,10 +63,13 @@ The primary advantage of Molded is that it makes it easy to inject dependencies 
 
 The following examples illustrate some of the things that can be done with dependency injection.
 
-```javascript
-var molded = require('../');
-var app = molded();
+#### app.value(name, val)
 
+If you want to provide a fixed value to your app, you can use `app.value('name', val)`
+
+For example, to hardcode a list of users:
+
+```javascript
 app.value('users', {
     'user1': {
         username: 'user1',
@@ -77,17 +80,75 @@ app.value('users', {
         email: 'user2@example.com'
     }
 });
+```
 
+#### app.singleton(name, func)
+
+If you want to provide a hardcoded value, but need to inject other dependencies, use `app.singleton('name', func)`
+
+Singletons are only called once, during app setup.
+
+For example, to inject user1 from the previous example:
+
+```javascript
 app.singleton('user1', function(users) {
     return users['user1'];
-});
-app.provide('user', function(req, res, users) {
-    // req.params comes from the route handler's route
-    return users[req.params.user];
 });
 
 app.get('/me', function(res, user1) {
     res.send(user1);
+});
+```
+
+As a more practical example, consider the following Mongoose database setup.
+
+```javascript
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+
+app.value('config', { dbConnectionString: 'mongodb://localhost/test' });
+
+app.singleton('db', function(config) {
+    mongoose.connect(config.dbConnectionString);
+    return mongoose;
+});
+
+app.singleton('Cat', function(db) {
+    return mongoose.model('Cat', { name: String });
+});
+
+app.use(bodyParser.json());
+
+app.get('/kittens', function(res, Cat) {
+    Cat.find(function(err, kittens) {
+        if (err) {
+            return next(err);
+        }
+        res.send(kittens);
+    });
+});
+
+app.post('/kittens', function(req, res, Cat) {
+    var kitten = new Cat(req.body);
+    kitten.save(function(err) {
+        if (err) {
+            return next(err);
+        }
+        res.send({success:true});
+    });
+});
+```
+
+#### app.provide(name, func)
+
+If you need to inject a custom value for each request, use `app.[rovide('name', func)`
+
+For example, to look up a user based on an app route:
+
+```javascript
+app.provide('user', function(req, res, users) {
+    // req.params comes from the route handler's route
+    return users[req.params.user];
 });
 
 app.get('/:user', function(req, res, next, user) {
@@ -97,6 +158,4 @@ app.get('/:user', function(req, res, next, user) {
         next();
     }
 });
-
-app.listen(3000);
 ```
