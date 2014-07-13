@@ -159,3 +159,25 @@ app.get('/:user', function(req, res, next, user) {
     }
 });
 ```
+Error Handling
+---
+
+Error handling in Molded is slightly different than Express. To catch errors, use `app.error()`.
+
+Calling `app.error('/route', handler)` only handles errors from that route.
+Calling `app.error(handler)` handles errors for all routes.
+
+```javascript
+app.get('/', function() {
+    throw Error('Something went wrong');
+});
+
+app.get('/next', function(next) {
+    next(Error('Something went wrong next'));
+});
+
+app.error(function(res, err)  {
+    res.statusCode = err.status || 500;
+    res.send({message: err.message, error: err});
+});
+```
