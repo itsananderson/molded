@@ -17,22 +17,27 @@ function RestInjector() {
     this.handlers = [];
 }
 
-RestInjector.prototype.handleRequest = function handleRequest(req, res) {
-    res.send = function send(status, content) {
-        var args = Array.prototype.slice.apply(arguments);
-        if (typeof status === 'number') {
-            req.status = args.shift();
-        } else {
-            content = status;
-        }
-        if (typeof content === 'object') {
-            res.write(JSON.stringify(content));
-            res.end();
-        } else {
-            res.write.apply(res, args);
-            res.end();
-        }
+function send(status, content) {
+    var args = Array.prototype.slice.apply(arguments);
+    if (typeof status === 'number') {
+        this.statusCode = args.shift();
+    } else {
+        content = status;
     }
+    if (typeof content === 'object') {
+        if (!this.headersSent && undefined === this.getHeader('content-type')) {
+            this.setHeader('Content-Type', 'application/json');
+        }
+        this.write(JSON.stringify(content));
+        this.end();
+    } else {
+        this.write.apply(this, args);
+        this.end();
+    }
+}
+
+RestInjector.prototype.handleRequest = function handleRequest(req, res) {
+    res.send = send.bind(res);
     var handlers = _.clone(this.handlers);
     function next() {
         if (handlers.length > 0) {
