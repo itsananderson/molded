@@ -40,8 +40,13 @@ RestInjector.prototype.handleRequest = function handleRequest(req, res) {
             if (null === params) {
                 return next();
             }
-            req.params = _.zipObject(_.pluck(handler.keys, 'name'),
-                handler.route.exec(req.url).slice(1));
+            var keys = _.pluck(handler.keys, 'name');
+            var routeParams = handler.route.exec(req.url).slice(1);
+            if (keys.length > 0) {
+                req.params = _.zipObject(keys, routeParams);
+            } else {
+                req.params = routeParams;
+            }
             handler.handleRequest(req, res, next);
         } else {
             res.write(util.format("Can't %s %s", req.method, req.url)); 
@@ -54,7 +59,7 @@ RestInjector.prototype.handleRequest = function handleRequest(req, res) {
 function addHandler(method, route, handleRequest) {
     if (_.isFunction(route) || _.isArray(route)) {
         handleRequest = route;
-        route = '*';
+        route = /.*/;
     }
     var keys = [];
     var route = p2r(route, keys);
@@ -84,7 +89,10 @@ RestInjector.prototype.value = function value(depName, val) {
     }
 };
 
-RestInjector.prototype.use = addHandler.bind(null, 'ALL');
+RestInjector.prototype.use = function() {
+    var args = ['ALL'].concat(Array.prototype.slice.apply(arguments));
+    addHandler.apply(this, args);
+};
 
 var methods = ['get', 'post', 'put', 'patch', 'delete', 'copy',
                'head', 'options', 'link', 'unlink', 'purge', 'all'];
