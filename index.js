@@ -29,11 +29,10 @@ function RestInjector() {
 
 RestInjector.prototype.handleRequest = function handleRequest(req, res) {
     res.send = send;
-    var index = 0;
     var handlers = _.clone(this.handlers);
     function next() {
-        if (index < handlers.length) {
-            var handler = handlers[index++];
+        if (handlers.length > 0) {
+            var handler = handlers.shift();
             if ('ALL' !== handler.method && handler.method !== req.method) {
                 return next();
             }
