@@ -100,6 +100,26 @@ Molded.prototype.resolveAndCall = function resolveAndCall(req, initialDeps, call
     return callback.resolve.apply(null, resolvedDeps);
 };
 
+function routeParams(route, url, keys) {
+    var keys = _.map(keys || [], function(key) {
+        if ('string' === typeof key) {
+            return key;
+        } else {
+            return key.name;
+        }
+    });
+    var params = params = route.exec(url);
+    if (null === params) {
+        return null;
+    }
+    params = Array.prototype.slice.call(params, 1);
+    if (keys.length > 0) {
+        return _.zipObject(keys, params);
+    } else {
+        return params;
+    }
+}
+
 Molded.prototype.handleRequest = function handleRequest(req, res) {
     var self = this;
     res.send = send.bind(res);
@@ -114,13 +134,7 @@ Molded.prototype.handleRequest = function handleRequest(req, res) {
             if (null === params) {
                 return next();
             }
-            var keys = _.pluck(handler.keys, 'name');
-            var routeParams = handler.route.exec(req.url).slice(1);
-            if (keys.length > 0) {
-                req.params = _.zipObject(keys, routeParams);
-            } else {
-                req.params = routeParams;
-            }
+            req.params = routeParams(handler.route, req.url, handler.keys);
             self.resolveAndCall(req, initialDeps(req, res, next), handler);
         } else {
             res.statusCode = 404;
