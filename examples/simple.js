@@ -8,6 +8,14 @@ var app = injector();
 
 app.value('port', 3000);
 
+app.singleton('single', function(port) {
+    return 'port: ' + port;
+});
+
+app.provide('rand', function(single) {
+    return single + ' ' + Math.random();
+});
+
 app.use(logger('dev'));
 app.use(serveStatic(__dirname));
 app.use(bodyParser.json());
@@ -27,6 +35,18 @@ app.get('/json', function(req, res) {
 
 app.post('/json', function(req, res) {
     res.send(req.body);
+});
+
+app.get('/port', function(req, res, port) {
+    res.send('' + port);
+});
+
+app.get('/single', function(res, single) {
+    res.send(single);
+});
+
+app.get('/rand', function(res, rand) {
+    res.send(rand);
 });
 
 app.use(serveIndex(__dirname));

@@ -67,26 +67,31 @@ function initialDeps(req, res, next) {
     }
 }
 
-Molded.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) {
+Molded.prototype.resolveDeps = function resolveDeps(method, url, initialDeps, depNames) {
     var self = this;
-    var possibleDeps = initialDeps.concat(this.providers);
+    var possibleDeps = []
+        .concat(initialDeps)
+        .concat(this.values)
+        .concat(this.singletons)
+        .concat(this.providers);
+
     var nextlessDeps = initialDeps.filter(function(dep) {
         return dep.name !== 'next';
     });
     var resolvedDeps = [];
     _.forEach(depNames, function(dep, index) {
         var found = _.find(possibleDeps, function(possibleDep) {
-            if (!methodMatches(req.method, possibleDep.method)) {
+            if (!methodMatches(method, possibleDep.method)) {
                 return false;
             }
             return possibleDep.name == dep
-                && null !== possibleDep.route.exec(req.url);
+                && null !== possibleDep.route.exec(url);
         });
         if (found) {
             if (found.value) {
                 resolvedDeps.push(found.value);
             } else {
-                resolvedDeps.push(self.resolveAndCall(req, nextlessDeps, found));
+                resolvedDeps.push(self.resolveAndCall(method, url, nextlessDeps, found));
             }
         } else {
             throw Error('Unresolved dependency: ' + dep);
@@ -95,8 +100,8 @@ Molded.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) 
     return resolvedDeps;
 };
 
-Molded.prototype.resolveAndCall = function resolveAndCall(req, initialDeps, callback) {
-    var resolvedDeps = this.resolveDeps(req, initialDeps, callback.deps); 
+Molded.prototype.resolveAndCall = function resolveAndCall(method, url, initialDeps, callback) {
+    var resolvedDeps = this.resolveDeps(method, url, initialDeps, callback.deps); 
     return callback.resolve.apply(null, resolvedDeps);
 };
 
@@ -139,7 +144,7 @@ Molded.prototype.handleRequest = function handleRequest(req, res) {
                 return next();
             }
             req.params = routeParams(handler.route, req.url, handler.keys);
-            self.resolveAndCall(req, initialDeps(req, res, next), handler);
+            self.resolveAndCall(req.method, req.url, initialDeps(req, res, next), handler);
         } else {
             res.statusCode = 404;
             res.write(util.format("Can't %s %s", req.method, req.url)); 
@@ -178,14 +183,31 @@ Molded.prototype.provide = function provide(depName, provider) {
 };
 
 Molded.prototype.singleton = function singleton(depName, func) {
-    this.singletons[depName] = func;
+    var deps = funcDeps(func);
+    var single = {
+        method: 'ALL',
+        route: /.*/,
+        name: depName,
+        deps: deps.deps,
+        resolve: deps.func
+    };
+    single.value = this.resolveAndCall('ALL', '/', [], single);
+    this.singletons.push(single);
 };
 
 Molded.prototype.value = function value(depName, val) {
     if (val) {
-        this.values[depName] = val;
+        this.values.push({
+            method: 'ALL',
+            route: /.*/,
+            name: depName,
+            value: val
+        });
     } else {
-        return this.values[depName];
+        var found = _.find(this.values, function(value) {
+            return value.name === depName
+        });
+        return undefined === found ? undefined : found.value;
     }
 };
 
