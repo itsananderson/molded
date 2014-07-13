@@ -24,14 +24,22 @@ function send(status, content) {
     } else {
         content = status;
     }
-    if (typeof content === 'object') {
+    if (typeof content === 'string') {
+        if (!this.headersSent && undefined === this.getHeader('content-type')) {
+            this.setHeader('Content-Type', 'text/html');
+        }
+        this.write(content);
+        this.end();
+    } else if (Buffer.isBuffer(content)) {
+        this.write(content);
+        this.end();
+    } else if (undefined === content) {
+        this.end('undefined');
+    } else {
         if (!this.headersSent && undefined === this.getHeader('content-type')) {
             this.setHeader('Content-Type', 'application/json');
         }
         this.write(JSON.stringify(content));
-        this.end();
-    } else {
-        this.write.apply(this, args);
         this.end();
     }
 }
@@ -42,7 +50,7 @@ function initialDep(name, value) {
         route: /.*/,
         name: name,
         deps: [],
-        provide: function() { return value }
+        resolve: function() { return value }
     }
 };
 
@@ -54,10 +62,11 @@ function initialDeps(req, res, next) {
     ];
 }
 
-RestInjector.prototype.resolveDeps = function resolveDeps(deps, req, res, next) {
-    var possibleDeps = initialDeps(req, res, next).concat(this.providers);
+RestInjector.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) {
+    var self = this;
+    var possibleDeps = initialDeps.concat(this.providers);
     var resolvedDeps = [];
-    _.forEach(deps, function(dep, index) {
+    _.forEach(depNames, function(dep, index) {
         var found = _.find(possibleDeps, function(possibleDep) {
             if ('ALL' !== possibleDep.method && possibleDep.method !== req.method) {
                 return false;
@@ -66,12 +75,18 @@ RestInjector.prototype.resolveDeps = function resolveDeps(deps, req, res, next) 
                 && null !== possibleDep.route.exec(req.url);
         });
         if (found) {
-            resolvedDeps.push(found.provide(req, res));
+            resolvedDeps.push(self.resolveAndCall(req, initialDeps, found));
         } else {
-            throw Error('Unresolved dependency ' + dep);
+            console.log(dep);
+            throw Error('Unresolved dependency: ' + dep);
         }
     });
     return resolvedDeps;
+};
+
+RestInjector.prototype.resolveAndCall = function resolveAndCall(req, initialDeps, callback) {
+    var resolvedDeps = this.resolveDeps(req, initialDeps, callback.deps); 
+    return callback.resolve.apply(null, resolvedDeps);
 };
 
 RestInjector.prototype.handleRequest = function handleRequest(req, res) {
@@ -95,8 +110,7 @@ RestInjector.prototype.handleRequest = function handleRequest(req, res) {
             } else {
                 req.params = routeParams;
             }
-            var depValues = self.resolveDeps(handler.deps, req, res, next);
-            handler.handleRequest.apply(null, depValues);
+            self.resolveAndCall(req, initialDeps(req, res, next), handler);
         } else {
             res.statusCode = 404;
             res.write(util.format("Can't %s %s", req.method, req.url)); 
@@ -106,30 +120,31 @@ RestInjector.prototype.handleRequest = function handleRequest(req, res) {
     next();
 };
 
-function addHandler(method, route, handleRequest) {
+function addHandler(method, route, handler) {
     if (_.isFunction(route) || _.isArray(route)) {
-        handleRequest = route;
+        handler = route;
         route = /.*/;
     }
     var keys = [];
     var route = p2r(route, keys);
-    var deps = funcDeps(handleRequest);
+    var deps = funcDeps(handler);
     this.handlers.push({
         method: method,
         keys: keys,
         route: route,
-        handleRequest: deps.func,
+        resolve: deps.func,
         deps: deps.deps
     });
 }
 
 RestInjector.prototype.provide = function provide(depName, provider) {
+    var deps = funcDeps(provider);
     this.providers.push({
         method: 'ALL',
         route: /.*/,
         name: depName,
-        deps: [],
-        provide: provider
+        deps: deps.deps,
+        resolve: deps.func
     });
 };
 
