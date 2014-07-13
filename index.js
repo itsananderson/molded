@@ -48,7 +48,6 @@ function initialDep(name, value) {
         method: 'ALL',
         route: /.*/,
         name: name,
-        deps: [],
         value: value
     }
 };
