@@ -36,7 +36,46 @@ function send(status, content) {
     }
 }
 
+function initialDep(name, value) {
+    return {
+        method: 'ALL',
+        route: /.*/,
+        name: name,
+        deps: [],
+        provide: function() { return value }
+    }
+};
+
+function initialDeps(req, res, next) {
+    return [
+        initialDep('req', req),
+        initialDep('res', res),
+        initialDep('next', next)
+    ];
+}
+
+RestInjector.prototype.resolveDeps = function resolveDeps(deps, req, res, next) {
+    var possibleDeps = initialDeps(req, res, next).concat(this.providers);
+    var resolvedDeps = [];
+    _.forEach(deps, function(dep, index) {
+        var found = _.find(possibleDeps, function(possibleDep) {
+            if ('ALL' !== possibleDep.method && possibleDep.method !== req.method) {
+                return false;
+            }
+            return possibleDep.name == dep
+                && null !== possibleDep.route.exec(req.url);
+        });
+        if (found) {
+            resolvedDeps.push(found.provide(req, res));
+        } else {
+            throw Error('Unresolved dependency ' + dep);
+        }
+    });
+    return resolvedDeps;
+};
+
 RestInjector.prototype.handleRequest = function handleRequest(req, res) {
+    var self = this;
     res.send = send.bind(res);
     var handlers = _.clone(this.handlers);
     function next() {
@@ -56,7 +95,8 @@ RestInjector.prototype.handleRequest = function handleRequest(req, res) {
             } else {
                 req.params = routeParams;
             }
-            handler.handleRequest(req, res, next);
+            var depValues = self.resolveDeps(handler.deps, req, res, next);
+            handler.handleRequest.apply(null, depValues);
         } else {
             res.statusCode = 404;
             res.write(util.format("Can't %s %s", req.method, req.url)); 
@@ -84,7 +124,13 @@ function addHandler(method, route, handleRequest) {
 }
 
 RestInjector.prototype.provide = function provide(depName, provider) {
-    this.providers[depName] = provider;
+    this.providers.push({
+        method: 'ALL',
+        route: /.*/,
+        name: depName,
+        deps: [],
+        provide: provider
+    });
 };
 
 RestInjector.prototype.singleton = function singleton(depName, func) {
