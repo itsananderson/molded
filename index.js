@@ -58,6 +58,7 @@ RestInjector.prototype.handleRequest = function handleRequest(req, res) {
             }
             handler.handleRequest(req, res, next);
         } else {
+            res.statusCode = 404;
             res.write(util.format("Can't %s %s", req.method, req.url)); 
             res.end();
         }
