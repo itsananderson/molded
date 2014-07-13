@@ -86,7 +86,6 @@ Molded.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) 
         if (found) {
             resolvedDeps.push(self.resolveAndCall(req, nextlessDeps, found));
         } else {
-            console.log(dep);
             throw Error('Unresolved dependency: ' + dep);
         }
     });
