@@ -49,7 +49,7 @@ function initialDep(name, value) {
         route: /.*/,
         name: name,
         deps: [],
-        resolve: function() { return value }
+        value: value
     }
 };
 
@@ -84,7 +84,11 @@ Molded.prototype.resolveDeps = function resolveDeps(req, initialDeps, depNames) 
                 && null !== possibleDep.route.exec(req.url);
         });
         if (found) {
-            resolvedDeps.push(self.resolveAndCall(req, nextlessDeps, found));
+            if (found.value) {
+                resolvedDeps.push(found.value);
+            } else {
+                resolvedDeps.push(self.resolveAndCall(req, nextlessDeps, found));
+            }
         } else {
             throw Error('Unresolved dependency: ' + dep);
         }
