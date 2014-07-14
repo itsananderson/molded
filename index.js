@@ -284,7 +284,14 @@ _.forEach(methods, function(method) {
 });
 
 Molded.prototype.listen = function listen(port, cb) {
-    http.createServer(this.handleRequest.bind(this)).listen(port);
+    this.server = http.createServer(this.handleRequest.bind(this)).listen(port);
+};
+
+Molded.prototype.close = function close(cb) {
+    if (this.server) {
+        this.server.close(cb);
+        this.server = null;
+    }
 };
 
 module.exports = Molded;
