@@ -83,6 +83,9 @@ Molded.prototype.resolveDeps = function resolveDeps(method, url, initialDeps, de
         if (found) {
             if (found.value) {
                 resolvedDeps.push(found.value);
+            } else if (found.singleton) {
+                // If singleton, call and cache value
+                resolvedDeps.push(found.value = self.resolveAndCall(method, url, nextlessDeps, found));
             } else {
                 resolvedDeps.push(self.resolveAndCall(method, url, nextlessDeps, found));
             }
@@ -228,9 +231,9 @@ Molded.prototype.singleton = function singleton(depName, func) {
         route: /.*/,
         name: depName,
         deps: deps.deps,
-        resolve: deps.func
+        resolve: deps.func,
+        singleton: true
     };
-    single.value = this.resolveAndCall('ALL', '/', [], single);
     this.singletons.push(single);
 };
 
