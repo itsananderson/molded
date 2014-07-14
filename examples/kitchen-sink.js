@@ -3,7 +3,6 @@ var q = require('q');
 var serveStatic = require('serve-static');
 var serveIndex = require('serve-index');
 var bodyParser = require('body-parser');
-var logger = require('morgan');
 
 var app = injector();
 
@@ -21,7 +20,7 @@ app.provide('delay', function() {
     var deferred = q.defer();
     setTimeout(function() {
         deferred.resolve('done delaying');
-    }, 3000);
+    }, 1000);
     return deferred.promise;
 });
 
@@ -31,7 +30,6 @@ app.provide('promiseError', function() {
     });
 });
 
-app.use(logger('dev'));
 app.use(serveStatic(__dirname));
 app.use(bodyParser.json());
 
@@ -64,18 +62,18 @@ app.get('/rand', function(send, randString) {
     send(randString);
 });
 
-app.get('/accepts', function(res, send, accepts, acceptsEncodings, acceptsCharsets) {
+app.get('/accepts', function(res, send, accepts, acceptsEncodings, acceptsCharsets, acceptsLanguages) {
     var stats =
         'favored content type: ' + accepts('txt','html','xml') + '\n' + 
         'favored encoding: ' + acceptsEncodings('gzip') + '\n' + 
-        'favored charset: ' + acceptsCharsets('utf8');
+        'favored charset: ' + acceptsCharsets('utf8') + '\n' +
+        'favored language: ' + acceptsLanguages('en', 'es');
     res.setHeader('Content-Type', 'text/plain');
     send(stats);
 });
 
 app.get('/delay', function(delay, send) {
-    console.log(delay);
-    send('delayed');
+    send('delayed ' + delay);
 });
 
 app.get('/error', function(promiseError, send) {
@@ -89,4 +87,8 @@ app.error(function(err, res, send) {
 
 app.use(serveIndex(__dirname));
 
-app.listen(app.value('port'));
+if (module.parent) {
+    module.exports = app;
+} else {
+    app.listen(app.value('port'));
+}
