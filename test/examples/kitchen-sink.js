@@ -6,7 +6,7 @@ var host = 'localhost';
 var port = 3000;
 var helper = require('./helper')(host, port);
 
-describe('Kitchen Sink', function() {
+describe('Kitchen Sink Example', function() {
     before(function() {
         kitchenSink.listen(port);
     });

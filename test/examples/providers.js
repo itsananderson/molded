@@ -5,7 +5,7 @@ var host = 'localhost';
 var port = 3000;
 var helper = require('./helper')(host, port);
 
-describe('Providers', function() {
+describe('Providers Example', function() {
     before(function() {
         providers.listen(port);
     });
