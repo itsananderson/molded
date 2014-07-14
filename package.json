@@ -17,7 +17,6 @@
   "dependencies": {
     "accepts": "^1.0.7",
     "lodash": "^2.4.1",
-    "mocha": "^1.20.1",
     "path-to-regexp": "^0.2.3",
     "q": "^1.0.1",
     "range-parser": "^1.0.0",
@@ -30,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/itsananderson/molded/issues"
   },
-  "homepage": "https://github.com/itsananderson/molded"
+  "homepage": "https://github.com/itsananderson/molded",
+  "devDependencies": {
+    "mocha": "^1.20.1"
+  }
 }
