@@ -28,6 +28,8 @@ ExampleTestHelper.prototype.expectGetResponse = function expectGetResponse(url, 
     this.getResponse(url, function(err, response, res) {
         if (typeof expectedResponse === 'string') {
             assert.equal(response, expectedResponse);
+        } else if (typeof expectedResponse === 'function') {
+            expectedResponse(response)
         } else {
             assert.ok(expectedResponse.test(response));
         }
@@ -57,10 +59,13 @@ ExampleTestHelper.prototype.postJson = function postJson(url, object, expectedRe
             responseString += data.toString();
         });
         res.on('end', function() {
-            if ('object' === typeof(expectedResponse)) {
-                expectedResponse = JSON.stringify(expectedResponse);
+            if ('object' === typeof expectedResponse) {
+                assert.equal(responseString, JSON.stringify(expectedResponse));
+            } else if ('function' === typeof expectedResponse) {
+                expectedResponse(responseString);
+            } else {
+                assert.equal(responseString, expectedResponse);
             }
-            assert.equal(responseString, expectedResponse);
             cb(null, responseString, res);
         });
     });

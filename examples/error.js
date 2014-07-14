@@ -34,4 +34,8 @@ app.error(function(res, sendJson, err)  {
     sendJson({message: err.message, error: err});
 });
 
-app.listen(3000);
+if (module.parent) {
+    module.exports = app;
+} else {
+    app.listen(app.value('port'));
+}
