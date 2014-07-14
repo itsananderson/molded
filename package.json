@@ -16,6 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "accepts": "^1.0.7",
+    "func-deps": "^0.1.1",
     "lodash": "^2.4.1",
     "path-to-regexp": "^0.2.3",
     "q": "^1.0.1",
