@@ -1,3 +1,9 @@
+// Skip MongoDB tests if running in Travis CI
+// Variable is configured in the Travis config
+if (process.env.TRAVIS) {
+    return;
+}
+
 var assert = require('assert');
 var http = require('http');
 var example = require('../../examples/mongoose');
