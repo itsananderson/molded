@@ -57,7 +57,10 @@ ExampleTestHelper.prototype.postJson = function postJson(url, object, expectedRe
             responseString += data.toString();
         });
         res.on('end', function() {
-            assert.equal(responseString, JSON.stringify(expectedResponse));
+            if ('object' === typeof(expectedResponse)) {
+                expectedResponse = JSON.stringify(expectedResponse);
+            }
+            assert.equal(responseString, expectedResponse);
             cb(null, responseString, res);
         });
     });

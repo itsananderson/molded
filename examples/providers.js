@@ -22,10 +22,10 @@ app.get('/range', function(range, res, send) {
     res.setHeader('Content-Type', 'text/plain');
     var requestedRange = range(1024);
     if (requestedRange) {
-        var message = util.format('Range: "%s" ', requestedRange.type);
+        var message = util.format('Range: "%s"\n', requestedRange.type);
         message += requestedRange.map(function(range) {
-            return util.format('\n\tStart: %d,\tEnd: %d', range.start, range.end); 
-        }).join(' ');
+            return util.format('\tStart: %d,\tEnd: %d', range.start, range.end); 
+        }).join('\n');
         send(message);
     } else {
         send('No range header specified');
@@ -40,4 +40,8 @@ app.post('/typeis', function(typeIs, send) {
     }
 });
 
-app.listen(3000);
+if (module.parent) {
+    module.exports = app;
+} else {
+    app.listen(app.value('port'));
+}
