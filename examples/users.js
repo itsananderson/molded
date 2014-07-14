@@ -16,4 +16,13 @@ app.post('/register', function(req, sendJson) {
     sendJson({success:true});
 });
 
-app.listen(3000);
+app.post('/purge', function(sendJson) {
+    users = [];
+    sendJson({success:true});
+});
+
+if (module.parent) {
+    module.exports = app;
+} else {
+    app.listen(app.value('port'));
+}
