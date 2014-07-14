@@ -9,7 +9,16 @@ app.get('/next', function(next) {
     next(Error('Something went wrong next'));
 });
 
-app.error(function(sendJson, err)  {
+app.get('/fail', function() {
+    throw Error('What happens if the error handler fails?');
+});
+
+app.error('/fail', function() {
+    // Undefined
+    res.statusCode = err.status || 500;
+});
+
+app.error(function(res, sendJson, err)  {
     res.statusCode = err.status || 500;
     sendJson({message: err.message, error: err});
 });

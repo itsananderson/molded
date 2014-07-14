@@ -1,4 +1,5 @@
 var injector = require('../');
+var q = require('q');
 var serveStatic = require('serve-static');
 var serveIndex = require('serve-index');
 var bodyParser = require('body-parser');
@@ -14,6 +15,20 @@ app.singleton('single', function(port) {
 
 app.provide('randString', function(single) {
     return single + ' ' + Math.random();
+});
+
+app.provide('delay', function() {
+    var deferred = q.defer();
+    setTimeout(function() {
+        deferred.resolve('done delaying');
+    }, 3000);
+    return deferred.promise;
+});
+
+app.provide('promiseError', function() {
+    return q.fcall(function() {
+        throw Error('Should catch this');
+    });
 });
 
 app.use(logger('dev'));
@@ -56,6 +71,20 @@ app.get('/accepts', function(res, send, accepts, acceptsEncodings, acceptsCharse
         'favored charset: ' + acceptsCharsets('utf8');
     res.setHeader('Content-Type', 'text/plain');
     send(stats);
+});
+
+app.get('/delay', function(delay, send) {
+    console.log(delay);
+    send('delayed');
+});
+
+app.get('/error', function(promiseError, send) {
+    send("Shouldn't get here");
+});
+
+app.error(function(err, res, send) {
+    res.statusCode = err.status || 500;
+    send(err.message);
 });
 
 app.use(serveIndex(__dirname));

@@ -2,7 +2,7 @@
 
 var p2r = require('path-to-regexp'),
     funcDeps = require('func-deps'),
-    accepts = require('accepts'),
+    q = require('q'),
     _ = require('lodash'),
     http = require('http'),
     util = require('util');
@@ -29,7 +29,6 @@ function Molded() {
     if (typeof this === 'undefined') {
         return new Molded();
     }
-    console.log(coreProviders);
     this.providers = coreProviders;
     this.singletons = [];
     this.values = [];
@@ -87,15 +86,20 @@ Molded.prototype.resolveDeps = function resolveDeps(method, url, initialDeps, de
                 resolvedDeps.push(self.resolveAndCall(method, url, nextlessDeps, found));
             }
         } else {
-            throw Error('Unresolved dependency: ' + dep);
+            resolvedDeps.push(q.fcall(function() {
+                throw Error('Unresolved dependency: ' + dep);
+            }));
+            return false;
         }
     });
-    return resolvedDeps;
+    return q.all(resolvedDeps);
 };
 
 Molded.prototype.resolveAndCall = function resolveAndCall(method, url, initialDeps, callback) {
-    var resolvedDeps = this.resolveDeps(method, url, initialDeps, callback.deps); 
-    return callback.resolve.apply(null, resolvedDeps);
+    var depsPromise = this.resolveDeps(method, url, initialDeps, callback.deps); 
+    return depsPromise.then(function(resolvedDeps) {
+        return callback.resolve.apply(null, resolvedDeps)
+    });
 };
 
 function routeParams(route, url, keys) {
@@ -139,11 +143,11 @@ Molded.prototype.handleRequest = function handleRequest(req, res) {
                     return next();
                 }
                 req.params = routeParams(handler.route, req.url, handler.keys);
-                try {
-                self.resolveAndCall(req.method, req.url, initialDeps(req, res, next), handler);
-                } catch(err) {
-                    self.handleError(req, res, err);
-                }
+                var deps = initialDeps(req, res, next);
+                self.resolveAndCall(req.method, req.url, deps, handler)
+                    .catch(function(err) {
+                        self.handleError(req, res, err)
+                    });
             } else {
                 res.statusCode = 404;
                 res.write(util.format("Can't %s %s", req.method, req.url)); 
@@ -161,14 +165,23 @@ Molded.prototype.handleError = function handleError(req, res, err) {
         if (errorHandlers.length > 0) {
             var handler = errorHandlers.shift();
             if (!methodMatches(req.method, handler.method)) {
-                return next();
+                return next(err);
             }
             var params = handler.route.exec(req.url);
             if (null === params) {
-                return next();
+                return next(err);
             }
             req.params = routeParams(handler.route, req.url, handler.keys);
-            self.resolveAndCall(req.method, req.url, initialDeps(req, res, next, err), handler);
+            self.resolveAndCall(req.method, req.url, initialDeps(req, res, next, err), handler).catch(function(err) {
+                next(err);
+            });
+        } else {
+            console.log(err);
+            res.statusCode = 500;
+            var message = 'An error has occurred. ' +
+                'Either there are no error handlers, ' + 
+                'or the associated error handler(s) also threw error(s).'
+            res.end(message);
         }
     }
     next(err);

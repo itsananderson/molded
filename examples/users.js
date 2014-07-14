@@ -13,7 +13,7 @@ app.get('/users', function(sendJson) {
 
 app.post('/register', function(req, sendJson) {
     users.push(req.body);
-    sendJson{success:true});
+    sendJson({success:true});
 });
 
 app.listen(3000);

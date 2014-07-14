@@ -1,3 +1,4 @@
+var q = require('q');
 var molded = require('../');
 var app = molded();
 
@@ -18,20 +19,14 @@ app.singleton('Cat', function(db) {
 app.use(bodyParser.json());
 
 app.get('/kittens', function(sendJson, Cat) {
-    Cat.find(function(err, kittens) {
-        if (err) {
-            return next(err);
-        }
+    return q.ninvoke(Cat, 'find').then(function(kittens) {
         sendJson(kittens);
-    });
+    });    
 });
 
 app.post('/kittens', function(req, sendJson, Cat) {
     var kitten = new Cat(req.body);
-    kitten.save(function(err) {
-        if (err) {
-            return next(err);
-        }
+    return q.ninvoke(kitten, 'save').then(function() {
         sendJson({success:true});
     });
 });
