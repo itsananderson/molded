@@ -4,16 +4,13 @@ var app = molded();
 
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var connectionString = 'mongodb://localhost/test';
+mongoose.connect(connectionString);
 
-app.value('config', { dbConnectionString: 'mongodb://localhost/test' });
+app.value('config', { db: mongoose, dbConnectionString: connectionString });
 
-app.singleton('db', function(config) {
-    mongoose.connect(config.dbConnectionString);
-    return mongoose;
-});
-
-app.singleton('Cat', function(db) {
-    return mongoose.model('Cat', { name: String });
+app.singleton('Cat', function(config) {
+    return config.db.model('Cat', { name: String });
 });
 
 app.use(bodyParser.json());
@@ -31,4 +28,20 @@ app.post('/kittens', function(req, sendJson, Cat) {
     });
 });
 
-app.listen(3000);
+app.post('/purge', function(req, sendJson, Cat) {
+    return q.ninvoke(Cat, 'remove').then(function() {
+        sendJson({success:true});
+    }).catch(function(err) {
+        console.log(err);
+    });
+});
+
+app.error(function(err, sendJson) {
+    sendJson(err);
+});
+
+if (module.parent) {
+    module.exports = {app:app,db:mongoose};
+} else {
+    app.listen(app.value('port'));
+}

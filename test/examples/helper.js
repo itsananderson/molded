@@ -30,15 +30,17 @@ ExampleTestHelper.prototype.expectGetResponse = function expectGetResponse(url, 
             assert.equal(response, expectedResponse);
         } else if (typeof expectedResponse === 'function') {
             expectedResponse(response)
-        } else {
+        } else if (Object.prototype.toString.call(expectedResponse) === '[object RegExp]') {
             assert.ok(expectedResponse.test(response));
+        } else {
+            assert.equal(response, JSON.stringify(expectedResponse));
         }
         cb(null, response, res);
     });
 };
 
 ExampleTestHelper.prototype.expectJson = function expectJson(url, object, cb) {
-    this.expectGetResponse(url, JSON.stringify(object),
+    this.expectGetResponse(url, object,
         function(err, response, res) {
             assert.equal(res.headers['content-type'], 'application/json');
             cb(err, response, res);
