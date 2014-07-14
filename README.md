@@ -1,4 +1,4 @@
-molded
+molded [![NPM version](https://badge.fury.io/js/molded.png)](http://badge.fury.io/js/molded) [![Builds](https://api.travis-ci.org/repositories/itsananderson/molded.png?branch=master)](https://travis-ci.org/itsananderson/molded)
 ======
 
 REST server library with dependency injection
