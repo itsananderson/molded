@@ -15,6 +15,7 @@ app.value('users', {
 app.singleton('user1', function(users) {
     return users['user1'];
 });
+
 app.provide('user', function(req, res, users) {
     // req.params comes from the route handler's route
     return users[req.params.user];
@@ -32,4 +33,8 @@ app.get('/:user', function(sendJson, next, user) {
     }
 });
 
-app.listen(3000);
+if (module.parent) {
+    module.exports = app;
+} else {
+    app.listen(app.value('port'));
+}
