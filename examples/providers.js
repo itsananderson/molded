@@ -17,6 +17,7 @@ app.get('/languages', function(acceptsLanguages, send) {
     }
 });
 
+
 app.get('/range', function(range, res, send) {
     res.setHeader('Content-Type', 'text/plain');
     var requestedRange = range(1024);
@@ -28,6 +29,14 @@ app.get('/range', function(range, res, send) {
         send(message);
     } else {
         send('No range header specified');
+    }
+});
+
+app.post('/typeis', function(typeIs, send) {
+    if (typeIs('application/json')) {
+        send('Thanks for the JSON :)');
+    } else {
+        send('Only application/json is accepted');
     }
 });
 
