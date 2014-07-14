@@ -9,7 +9,8 @@ var p2r = require('path-to-regexp'),
 
 var coreProviderNames = [
     'send-json', 'send',
-    'accepts', 'accepts-encodings', 'accepts-charsets'];
+    'accepts', 'accepts-encodings', 'accepts-charsets', 'accepts-languages',
+    'range'];
 var coreProviders = [];
 
 function dashToCamel(string) {

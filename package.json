@@ -18,7 +18,8 @@
     "accepts": "^1.0.7",
     "lodash": "^2.4.1",
     "path-to-regexp": "^0.2.3",
-    "q": "^1.0.1"
+    "q": "^1.0.1",
+    "range-parser": "^1.0.0"
   },
   "repository": {
     "type": "git",
