@@ -22,10 +22,12 @@ With Molded, you define route handlers similar to the ones defined in Express.
 var molded = require('molded');
 var app = molded();
 
+// send() automatically sends objects as JSON
 app.get('/', function(req, send) {
     send({"welcome":"home"});
 });
 
+// Use sendJson() to always send JSON, regardless of data type
 app.get('/:name', function(req, sendJson) {
     sendJson({"hello":req.params.name);
 });
@@ -33,7 +35,7 @@ app.get('/:name', function(req, sendJson) {
 app.listen(3000);
 ```
 
-You can plug in Connect middleware like body-parser and serve-static.
+You can plug in Connect middleware like body-parser.
 
 ```javascript
 var bodyParser = require('body-parser');
@@ -141,7 +143,7 @@ app.post('/kittens', function(req, sendJson, Cat) {
 
 #### app.provide(name, func)
 
-If you need to inject a custom value for each request, use `app.[rovide('name', func)`
+If you need to inject a custom value for each request, use `app.provide('name', func)`
 
 For example, to look up a user based on an app route:
 
@@ -176,8 +178,68 @@ app.get('/next', function(next) {
     next(Error('Something went wrong next'));
 });
 
-app.error(function(res, err, sendJson)  {
+app.get('/fail', function() {
+    throw Error('What happens if the error handler fails?');
+});
+
+app.error('/fail', function() {
+    // 'something' is undefined
+    console.log(something);
+});
+
+app.error(function(res, sendJson, err)  {
     res.statusCode = err.status || 500;
     sendJson({message: err.message, error: err});
 });
+```
+
+Promises
+---
+
+In Molded, promises are first-class citizens.
+Providers that need to make async calls can wrap them in promises.
+Molded will wait until the promise resolves before passing the result on to whatever depends on that provider.
+
+If a promise throws an exception, Molded passes the exception to the app's error handler.
+If no error handler is present, Molded sends a 500 with a generic error message.
+
+The following example shows how to provide a simple MongoDB backed API using Mongoose.
+Notice that the API endpoints use `q.ninvoke` to call the Mongoose methods.
+By returning this promise from the handler, we let Molded worry about handling any errors returned by Mongoose.
+
+```javascript
+var q = require('q');
+var molded = require('molded');
+var app = molded();
+
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+
+app.value('config', { dbConnectionString: 'mongodb://localhost/test' });
+
+app.singleton('db', function(config) {
+    mongoose.connect(config.dbConnectionString);
+    return mongoose;
+});
+
+app.singleton('Cat', function(db) {
+    return mongoose.model('Cat', { name: String });
+});
+
+app.use(bodyParser.json());
+
+app.get('/kittens', function(sendJson, Cat) {
+    return q.ninvoke(Cat, 'find').then(function(kittens) {
+        sendJson(kittens);
+    });    
+});
+
+app.post('/kittens', function(req, sendJson, Cat) {
+    var kitten = new Cat(req.body);
+    return q.ninvoke(kitten, 'save').then(function() {
+        sendJson({success:true});
+    });
+});
+
+app.listen(3000);
 ```

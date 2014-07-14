@@ -1,9 +1,9 @@
 var bodyParser = require('body-parser');
-var injector = require('../');
+var molded = require('../');
 
 var users = [];
 
-var app = injector();
+var app = molded();
 
 app.use(bodyParser.json());
 

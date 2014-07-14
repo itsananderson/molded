@@ -14,8 +14,8 @@ app.get('/fail', function() {
 });
 
 app.error('/fail', function() {
-    // Undefined
-    res.statusCode = err.status || 500;
+    // 'something' is undefined
+    console.log(something);
 });
 
 app.error(function(res, sendJson, err)  {
