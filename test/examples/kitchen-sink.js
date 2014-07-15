@@ -2,16 +2,9 @@ var assert = require('assert');
 var http = require('http');
 var fork = require('child_process').fork;
 var kitchenSink = require('../../examples/kitchen-sink');
-var host = 'localhost';
-var port = 3000;
-var request = require('supertest')('http://localhost:3000');
+var request = require('supertest')(kitchenSink);
 
 describe('Kitchen Sink Example', function() {
-    var server;
-    before(function() {
-        server = kitchenSink.listen(port);
-    });
-
     it('exists', function() {
         assert(kitchenSink != undefined);
     });
@@ -89,11 +82,5 @@ describe('Kitchen Sink Example', function() {
         request
             .get('/error')
             .expect(500, 'Should catch this', done);
-    });
-
-    after(function(done) {
-        server.close(function() {
-            done();
-        });
     });
 });

@@ -1,16 +1,9 @@
 var assert = require('assert');
 var http = require('http');
 var error = require('../../examples/error');
-var host = 'localhost';
-var port = 3000;
-var request = require('supertest')('http://localhost:3000');
+var request = require('supertest')(error);
 
 describe('Errors Example', function() {
-    var server;
-    before(function() {
-        server = error.listen(port);
-    });
-
     it('exists', function() {
         assert(error != undefined);
     });
@@ -40,11 +33,5 @@ describe('Errors Example', function() {
                 assert.equal(res.body.message, 'Something went wrong next');
                 done();
             });
-    });
-
-    after(function(done) {
-        server.close(function() {
-            done();
-        });
     });
 });
