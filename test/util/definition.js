@@ -17,23 +17,47 @@ function testMethodAndRoute(type) {
 }
 
 describe('definition', function() {
-    describe('provider()', function() {
+    it('exists', function() {
+        assert(definition);
+    });
+
+    it('is a function ', function() {
+        assert(typeof definition === 'function');
+    });
+
+    it('accepts a custom method and route', function() {
+        testMethodAndRoute(definition.provider, 'foo', noop);
+    });
+
+    it('only sets deps/resolve if func exists', function() {
+        var withoutFunc = definition('ALL', /.*/, 'foo', undefined, 123);
+        assert(undefined === withoutFunc.deps);
+        assert(undefined === withoutFunc.func);
+    });
+
+    it('only sets value if it exists', function() {
+        var withoutVal = definition('ALL', /.*/, 'foo', noop);
+
+        assert(undefined === withoutVal.value);
+    });
+
+    it('only sets singleton if it exists', function() {
+        var withoutSingleton = definition('ALL', /.*/, 'foo', noop);
+        assert(undefined === withoutSingleton.singleton);
+
+        var withSingleton = definition('ALL', /.*/, 'foo', noop, undefined, true);
+        assert(true === withSingleton.singleton);
+    });
+
+    describe('.provider()', function() {
         it('exists', function() {
             assert(definition.provider);
         });
-
-        it('accepts a custom method and route', function() {
-            testMethodAndRoute(definition.provider, 'foo', noop);
-        });
     });
 
-    describe('singleton()', function() {
+    describe('.singleton()', function() {
         it('exists', function() {
             assert(definition.singleton);
-        });
-
-        it('accepts a custom method and route', function() {
-            testMethodAndRoute(definition.singleton, 'foo', noop);
         });
 
         it('sets a singleton boolean to true', function() {
@@ -42,13 +66,9 @@ describe('definition', function() {
         });
     });
 
-    describe('value()', function() {
+    describe('.value()', function() {
         it('exists', function() {
             assert(definition.value);
-        });
-
-        it('accepts a custom method and route', function() {
-            testMethodAndRoute(definition.value, 'foo', noop);
         });
 
         it('sets a value property', function() {
@@ -57,21 +77,19 @@ describe('definition', function() {
         });
     });
 
-    describe('error()', function() {
+    describe('.error()', function() {
         it('exists', function() {
             assert(definition.error);
         });
-        it('accepts a custom method and route', function() {
-            testMethodAndRoute(definition.error, 'foo', noop);
-        });
     });
 
-    describe('initial()', function() {
+    describe('.initial()', function() {
         it('exists', function() {
             assert(definition.initial);
         });
-        it('accepts a custom method and route', function() {
-            testMethodAndRoute(definition.initial, 'foo', noop);
+        it('sets a value property', function() {
+            var def = definition.initial('ALL', /.*/, 'foo', 123);
+            assert.equal(def.value, 123);
         });
     });
 });
