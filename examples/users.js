@@ -5,6 +5,8 @@ var users = [];
 
 var app = molded();
 
+app.value('port', 3000);
+
 app.use(bodyParser.json());
 
 app.get('/users', function(sendJson) {

@@ -1,6 +1,8 @@
 var molded = require('../');
 var app = molded();
 
+app.value('port', 3000);
+
 // If a provider throws an exception, it is sent to the error handlers matching the request's route.
 app.provide('broken', function() {
     throw Error('Oh noes');

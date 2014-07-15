@@ -2,6 +2,8 @@ var util = require('util');
 var molded = require('../');
 var app = molded();
 
+app.value('port', 3000);
+
 // TODO: Add examples for other core providers
 
 app.get('/languages', function(acceptsLanguages, send) {

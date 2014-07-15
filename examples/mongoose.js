@@ -7,6 +7,8 @@ var mongoose = require('mongoose');
 var connectionString = 'mongodb://localhost/test';
 mongoose.connect(connectionString);
 
+app.value('port', 3000);
+
 app.value('config', { db: mongoose, dbConnectionString: connectionString });
 
 app.singleton('Cat', function(config) {
