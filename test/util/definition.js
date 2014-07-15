@@ -50,6 +50,11 @@ describe('definition', function() {
         it('accepts a custom method and route', function() {
             testMethodAndRoute(definition.value, 'foo', noop);
         });
+
+        it('sets a value property', function() {
+            var def = definition.value('ALL', /.*/, 'foo', 123);
+            assert.equal(def.value, 123);
+        });
     });
 
     describe('error()', function() {
