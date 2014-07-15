@@ -1,4 +1,5 @@
 var injector = require('../');
+var path = require('path');
 var q = require('q');
 var serveStatic = require('serve-static');
 var serveIndex = require('serve-index');
@@ -82,6 +83,10 @@ app.get('/delay', function(delay, send) {
 
 app.get('/error', function(promiseError, send) {
     send("Shouldn't get here");
+});
+
+app.get('/file', function(sendFile) {
+    sendFile(path.join(__dirname, 'file.txt'));
 });
 
 app.get('/next', function(callNext, send) {

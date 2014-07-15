@@ -84,6 +84,12 @@ describe('Kitchen Sink Example', function() {
             .expect(500, 'Should catch this', done);
     });
 
+    it('sends a file', function(done) {
+        request
+            .get('/file')
+            .expect('file', done);
+    });
+
     it('lets providers call next', function(done) {
         request
             .get('/next')
