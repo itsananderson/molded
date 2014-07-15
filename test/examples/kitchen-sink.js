@@ -90,6 +90,12 @@ describe('Kitchen Sink Example', function() {
             .expect('file', done);
     });
 
+    it("sendFile fails when file doesn't exist", function(done) {
+        request
+            .get('/file404')
+            .expect(/ENOENT, stat .*file404\.txt/, done);
+    });
+
     it('lets providers call next', function(done) {
         request
             .get('/next')

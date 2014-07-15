@@ -89,6 +89,11 @@ app.get('/file', function(sendFile) {
     sendFile(path.join(__dirname, 'file.txt'));
 });
 
+app.get('/file404', function(sendFile) {
+    // This file shouldn't exist
+    sendFile(path.join(__dirname, 'file404.txt'));
+});
+
 app.get('/next', function(callNext, send) {
     send("Shouldn't get here");
 });
