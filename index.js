@@ -1,21 +1,17 @@
 "use strict";
 
-var q = require('q'),
-    _ = require('lodash'),
-    util = require('util'),
-    mixin = require('utils-merge'),
+var mixin = require('utils-merge'),
     EventEmitter = require('events').EventEmitter;
 
-var appProto = require('./lib/application'),
-    coreProviders = require('./lib/providers'),
-    definition = require('./lib/definition');
+var proto = require('./lib/application'),
+    coreProviders = require('./lib/providers');
 
 function createApplication() {
     function app(req, res) {
         app.handleRequest(req, res);
     }
 
-    mixin(app, appProto);
+    mixin(app, proto);
     mixin(app, EventEmitter.prototype);
 
     app.providers = coreProviders;
