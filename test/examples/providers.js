@@ -6,8 +6,9 @@ var port = 3000;
 var request = require('supertest')('http://localhost:3000');
 
 describe('Providers Example', function() {
+    var server;
     before(function() {
-        providers.listen(port);
+        server = providers.listen(port);
     });
 
     it('exists', function() {
@@ -68,7 +69,7 @@ describe('Providers Example', function() {
     });
 
     after(function(done) {
-        providers.close(function() {
+        server.close(function() {
             done();
         });
     });

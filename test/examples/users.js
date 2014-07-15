@@ -3,11 +3,12 @@ var http = require('http');
 var users = require('../../examples/users');
 var host = 'localhost';
 var port = 3000;
-var request = require('supertest')('http://localhost:3000');
+var request = require('supertest')(users);
 
 describe('Users Example', function() {
+    var server;
     before(function() {
-        users.listen(port);
+        server = users.listen(port);
     });
 
     it('exists', function() {
@@ -69,7 +70,7 @@ describe('Users Example', function() {
     });
 
     after(function(done) {
-        users.close(function() {
+        server.close(function() {
             done();
         });
     });

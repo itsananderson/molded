@@ -15,6 +15,7 @@ var port = 3000;
 var request = require('supertest')('http://localhost:3000');
 
 describe('Mongoose Example', function() {
+    var server;
     before(function(done) {
         // Small kludge:
         // If the Cat model is already defined, inject it as a value
@@ -25,7 +26,7 @@ describe('Mongoose Example', function() {
         if (model) {
             app.value('Cat', model);
         }
-        app.listen(port); 
+        server = app.listen(port); 
         request
             .post('/purge')
             .send({})
@@ -111,7 +112,7 @@ describe('Mongoose Example', function() {
     });
 
     after(function(done) {
-        app.close(function() {
+        server.close(function() {
             db.disconnect();
             done();
         });

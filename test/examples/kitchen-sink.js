@@ -7,8 +7,9 @@ var port = 3000;
 var request = require('supertest')('http://localhost:3000');
 
 describe('Kitchen Sink Example', function() {
+    var server;
     before(function() {
-        kitchenSink.listen(port);
+        server = kitchenSink.listen(port);
     });
 
     it('exists', function() {
@@ -91,7 +92,7 @@ describe('Kitchen Sink Example', function() {
     });
 
     after(function(done) {
-        kitchenSink.close(function() {
+        server.close(function() {
             done();
         });
     });

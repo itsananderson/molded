@@ -6,8 +6,9 @@ var port = 3000;
 var request = require('supertest')('http://localhost:3000');
 
 describe('Injection Example', function() {
+    var server;
     before(function() {
-        injection.listen(port);
+        server = injection.listen(port);
     });
 
     it('exists', function() {
@@ -43,7 +44,7 @@ describe('Injection Example', function() {
     });
 
     after(function(done) {
-        injection.close(function() {
+        server.close(function() {
             done();
         });
     });
