@@ -16,6 +16,10 @@ app.provide('randString', function(single) {
     return single + ' ' + Math.random();
 });
 
+app.provide('callNext', function(next) {
+    next();
+});
+
 app.provide('delay', function() {
     var deferred = q.defer();
     setTimeout(function() {
@@ -78,6 +82,14 @@ app.get('/delay', function(delay, send) {
 
 app.get('/error', function(promiseError, send) {
     send("Shouldn't get here");
+});
+
+app.get('/next', function(callNext, send) {
+    send("Shouldn't get here");
+});
+
+app.get('/next', function(send) {
+    send('Should get here');
 });
 
 app.error(function(err, res, send) {

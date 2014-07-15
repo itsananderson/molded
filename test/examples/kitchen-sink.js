@@ -83,4 +83,10 @@ describe('Kitchen Sink Example', function() {
             .get('/error')
             .expect(500, 'Should catch this', done);
     });
+
+    it('lets providers call next', function(done) {
+        request
+            .get('/next')
+            .expect('Should get here', done);
+    });
 });
