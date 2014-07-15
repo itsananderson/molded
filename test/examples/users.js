@@ -1,11 +1,11 @@
 var assert = require('assert');
 var http = require('http');
-var users = require('../../examples/users');
-var request = require('supertest')(users);
+var app = require('../../examples/users');
+var request = require('supertest')(app);
 
 describe('Users Example', function() {
     it('exists', function() {
-        assert(users != undefined);
+        assert(app != undefined);
     });
 
     it('starts empty', function(done) {

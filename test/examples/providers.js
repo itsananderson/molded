@@ -1,11 +1,11 @@
 var assert = require('assert');
 var http = require('http');
-var providers = require('../../examples/providers');
-var request = require('supertest')(providers);
+var app = require('../../examples/providers');
+var request = require('supertest')(app);
 
 describe('Providers Example', function() {
     it('exists', function() {
-        assert(providers != undefined);
+        assert(app != undefined);
     });
 
     it('checks accept-language: en', function(done) {

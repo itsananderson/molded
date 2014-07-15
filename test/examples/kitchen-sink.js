@@ -1,12 +1,12 @@
 var assert = require('assert');
 var http = require('http');
 var fork = require('child_process').fork;
-var kitchenSink = require('../../examples/kitchen-sink');
-var request = require('supertest')(kitchenSink);
+var app = require('../../examples/kitchen-sink');
+var request = require('supertest')(app);
 
 describe('Kitchen Sink Example', function() {
     it('exists', function() {
-        assert(kitchenSink != undefined);
+        assert(app != undefined);
     });
 
     it('greets users with their name and age', function(done) {

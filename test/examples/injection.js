@@ -1,11 +1,11 @@
 var assert = require('assert');
 var http = require('http');
-var injection = require('../../examples/injection');
-var request = require('supertest')(injection);
+var app = require('../../examples/injection');
+var request = require('supertest')(app);
 
 describe('Injection Example', function() {
     it('exists', function() {
-        assert(injection != undefined);
+        assert(app != undefined);
     });
 
     var user1 = {

@@ -1,11 +1,11 @@
 var assert = require('assert');
 var http = require('http');
-var error = require('../../examples/error');
-var request = require('supertest')(error);
+var app = require('../../examples/error');
+var request = require('supertest')(app);
 
 describe('Errors Example', function() {
     it('exists', function() {
-        assert(error != undefined);
+        assert(app != undefined);
     });
 
     it('falls through error handlers', function(done) {
