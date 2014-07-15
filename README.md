@@ -28,8 +28,8 @@ app.get('/', function(req, send) {
 });
 
 // Use sendJson() to always send JSON, regardless of data type
-app.get('/:name', function(req, sendJson) {
-    sendJson({"hello":req.params.name);
+app.get('/:name', function(params, sendJson) {
+    sendJson({"hello":params.name);
 });
 
 app.listen(3000);
@@ -148,9 +148,8 @@ If you need to inject a custom value for each request, use `app.provide('name', 
 For example, to look up a user based on an app route:
 
 ```javascript
-app.provide('user', function(req, res, users) {
-    // req.params comes from the route handler's route
-    return users[req.params.user];
+app.provide('/:user', 'user', function(params, users) {
+    return users[params.user];
 });
 
 app.get('/:user', function(sendJson, next, user) {
