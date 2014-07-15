@@ -33,8 +33,6 @@ app.post('/kittens', function(req, sendJson, Cat) {
 app.post('/purge', function(req, sendJson, Cat) {
     return q.ninvoke(Cat, 'remove').then(function() {
         sendJson({success:true});
-    }).catch(function(err) {
-        console.log(err);
     });
 });
 

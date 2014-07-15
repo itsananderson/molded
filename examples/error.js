@@ -16,9 +16,9 @@ app.get('/broken', function(broken) {
 app.get('/fail', function() {
     throw Error('What happens if the error handler fails?');
 });
-app.error('/fail', function() {
+app.error('/fail', function(send) {
     // 'something' is undefined
-    console.log(something);
+    send(something);
 });
 
 // If a route handler throws an exception, it's sent to the error handler(s) that match the route
