@@ -24,12 +24,16 @@ var app = molded();
 
 // send() automatically sends objects as JSON
 app.get('/', function(req, send) {
-    send({"welcome":"home"});
+    send({
+        welcome: "home"
+    });
 });
 
 // Use sendJson() to always send JSON, regardless of data type
 app.get('/:name', function(params, sendJson) {
-    sendJson({"hello":params.name);
+    sendJson({
+        "hello": params.name
+    });
 });
 
 app.listen(3000);
