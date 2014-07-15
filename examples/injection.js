@@ -16,9 +16,8 @@ app.singleton('user1', function(users) {
     return users['user1'];
 });
 
-app.provide('user', function(req, res, users) {
-    // req.params comes from the route handler's route
-    return users[req.params.user];
+app.provide('/:user', 'user', function(params, users) {
+    return users[params.user];
 });
 
 app.get('/me', function(sendJson, user1) {

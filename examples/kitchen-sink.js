@@ -33,13 +33,13 @@ app.provide('promiseError', function() {
 app.use(serveStatic(__dirname));
 app.use(bodyParser.json());
 
-app.get('/greet/:name/:age', function(req, send) {
-    send('hello ' + req.params.name +
-        ' age ' + req.params.age);
+app.get('/greet/:name/:age', function(params, send) {
+    send('hello ' + params.name +
+        ' age ' + params.age);
 });
 
-app.get(/^\/foo\/bar(.*)$/, function(req, send) {
-    send(req.params[0]);
+app.get(/^\/foo\/bar(.*)$/, function(params, send) {
+    send(params[0]);
 });
 
 app.get('/json', function(req, sendJson) {
