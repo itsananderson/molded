@@ -1,15 +1,9 @@
 var assert = require('assert');
 var http = require('http');
 var providers = require('../../examples/providers');
-var host = 'localhost';
-var port = 3000;
-var request = require('supertest')('http://localhost:3000');
+var request = require('supertest')(providers);
 
 describe('Providers Example', function() {
-    before(function() {
-        providers.listen(port);
-    });
-
     it('exists', function() {
         assert(providers != undefined);
     });
@@ -65,11 +59,5 @@ describe('Providers Example', function() {
             .post('/typeis')
             .send('hello world')
             .expect('Only application/json is accepted', done);
-    });
-
-    after(function(done) {
-        providers.close(function() {
-            done();
-        });
     });
 });

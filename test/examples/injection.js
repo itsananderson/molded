@@ -1,15 +1,9 @@
 var assert = require('assert');
 var http = require('http');
 var injection = require('../../examples/injection');
-var host = 'localhost';
-var port = 3000;
-var request = require('supertest')('http://localhost:3000');
+var request = require('supertest')(injection);
 
 describe('Injection Example', function() {
-    before(function() {
-        injection.listen(port);
-    });
-
     it('exists', function() {
         assert(injection != undefined);
     });
@@ -40,11 +34,5 @@ describe('Injection Example', function() {
         request
             .get('/user2')
             .expect(user2, done);
-    });
-
-    after(function(done) {
-        injection.close(function() {
-            done();
-        });
     });
 });

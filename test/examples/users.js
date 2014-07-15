@@ -1,15 +1,9 @@
 var assert = require('assert');
 var http = require('http');
 var users = require('../../examples/users');
-var host = 'localhost';
-var port = 3000;
-var request = require('supertest')('http://localhost:3000');
+var request = require('supertest')(users);
 
 describe('Users Example', function() {
-    before(function() {
-        users.listen(port);
-    });
-
     it('exists', function() {
         assert(users != undefined);
     });
@@ -66,11 +60,5 @@ describe('Users Example', function() {
                     .get('/users')
                     .expect([], done);
             });
-    });
-
-    after(function(done) {
-        users.close(function() {
-            done();
-        });
     });
 });
