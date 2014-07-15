@@ -14,6 +14,12 @@ describe('definition', function() {
         });
     });
 
+    describe('value()', function() {
+        it('exists', function() {
+            assert(definition.value);
+        });
+    });
+
     describe('error()', function() {
         it('exists', function() {
             assert(definition.error);
