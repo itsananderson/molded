@@ -3,7 +3,7 @@ var http = require('http');
 var users = require('../../examples/users');
 var host = 'localhost';
 var port = 3000;
-var helper = require('./helper')(host, port);
+var request = require('supertest')('http://localhost:3000');
 
 describe('Users Example', function() {
     before(function() {
@@ -15,7 +15,9 @@ describe('Users Example', function() {
     });
 
     it('starts empty', function(done) {
-        helper.expectJson('/users',  [], done);
+        request
+            .get('/users')
+            .expect([], done);
     });
 
     var newUser = {
@@ -23,12 +25,17 @@ describe('Users Example', function() {
         age: 25
     };
     function addUser(cb) {
-        helper.postJson('/register', newUser, {success:true}, cb);
+        request
+            .post('/register')
+            .send(newUser)
+            .expect({success:true}, cb)
     }
 
     it('adds users', function(done) {
         addUser(function(err, str, res) {
-            helper.expectJson('/users', [newUser], done);
+            request
+                .get('/users')
+                .expect([newUser], done);
         });
     });
 
@@ -36,19 +43,29 @@ describe('Users Example', function() {
     it('adds multiple users', function(done) {
         addUser(function() {
             addUser(function() {
-                helper.expectJson('/users', [newUser, newUser], done);
+            request
+                .get('/users')
+                .expect([newUser, newUser], done);
             });
         });
     });
 
     it('purges users for each test', function(done) {
-        helper.expectJson('/users', [], done);
+        request
+            .get('/users')
+            .expect([], done);
     });
 
     afterEach(function(done) {
-        helper.postJson('/purge', {}, {success:true}, function(err, str, res) {
-            helper.expectJson('/users', [], done);
-        });
+        request
+            .post('/purge')
+            .send({})
+            .expect({success:true}, function(err) {
+                if (err) return done(err);
+                request
+                    .get('/users')
+                    .expect([], done);
+            });
     });
 
     after(function(done) {

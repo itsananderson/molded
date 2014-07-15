@@ -4,7 +4,7 @@ var fork = require('child_process').fork;
 var kitchenSink = require('../../examples/kitchen-sink');
 var host = 'localhost';
 var port = 3000;
-var helper = require('./helper')(host, port);
+var request = require('supertest')('http://localhost:3000');
 
 describe('Kitchen Sink Example', function() {
     before(function() {
@@ -16,87 +16,78 @@ describe('Kitchen Sink Example', function() {
     });
 
     it('greets users with their name and age', function(done) {
-        helper.expectGetResponse('/greet/will/23',  'hello will age 23', done);
+        request
+            .get('/greet/bob/25')
+            .expect('hello bob age 25', done);
     });
 
     it('returns everything after /foo/bar', function(done) {
-        helper.expectGetResponse('/foo/bar/123',  '/123', done);
+        request
+            .get('/foo/bar/123')
+            .expect('/123', done);
     });
 
     it('returns json', function(done) {
-        helper.expectJson('/json', {"here":"is","some":"json"}, done);
+        request
+            .get('/json')
+            .expect({"here":"is","some":"json"}, done);
     });
 
     it('accepts json', function(done) {
         var obj = {"here":"is","some":"json"}; 
-        helper.postJson('/json', obj, obj, done);
+        request.
+            post('/json')
+            .send(obj)
+            .expect(obj, done);
     });
 
     it("gives the port it's configured with", function(done) {
-        helper.expectGetResponse('/port', '3000', done);
+        request
+            .get('/port')
+            .expect('3000', done);
     });
 
     it('gives a singleton', function(done) {
-        helper.expectGetResponse('/single', 'port: 3000', done);
+        request
+            .get('/single')
+            .expect('port: 3000', done);
     });
 
     it('gives a random response', function(done) {
-        helper.expectGetResponse('/rand', /port: 3000 0\.[0-9]+/, done);
+        request
+            .get('/rand')
+            .expect(/port: 3000 0\.[0-9]+/, done);
     });
 
     it('checks accepts headers', function(done) {
-        var opts = {
-            host: host,
-            port: port,
-            path: '/accepts',
-            headers: {
-                'accept': 'text/plain',
-                'accept-encoding': 'gzip',
-                'accept-charset': 'utf8',
-                'accept-language': 'en'
-            },
-            method: 'GET'
-        };
         var expectedResponse = 'favored content type: txt\n' +
             'favored encoding: gzip\n' +
             'favored charset: utf8\n' +
             'favored language: en';
-        helper.expectGetResponse(opts, expectedResponse, done);
+        request
+            .get('/accepts')
+            .set('Accept', 'text/plain')
+            .set('Accept-Encoding', 'gzip')
+            .set('Accept-Charset', 'utf8')
+            .set('Accept-Language', 'en')
+            .expect(expectedResponse, done);
     });
 
     it('delays response', function(done) {
-        var finished = false;
-        var opts = {
-            host: host,
-            port: port,
-            path: '/delay',
-            method: 'GET'
-        };
-        req = http.request(opts, function(res) {
-            res.on('data', function() {});
-            res.on('end', function() {
-                assert(false, "Didn't delay");
+        request
+            .get('/delay')
+            .timeout(100)
+            .end(function(err, res) {
+                assert(err, 'expected an error');
+                assert('number' === typeof err.timeout, 'expected a timeout');
                 done();
             });
-        });
-
-        req.on('error', function(err) {
-            if ('socket hang up' === err.message) {
-                done();
-            } else {
-                throw err;
-            }
-        });
-
-        req.setTimeout(100, req.abort.bind(req));
-        req.end();
     });
 
     it('throws error', function(done) {
-        helper.expectGetResponse('/error', 'Should catch this', function(err, text, res) {
-            assert.equal(res.statusCode, 500);
-            done();
-        });
+        request
+            .get('/error')
+            .expect(500, 'Should catch this', done);
     });
 
     after(function(done) {

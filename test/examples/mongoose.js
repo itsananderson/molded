@@ -12,7 +12,7 @@ var db = example.db;
 var _ = require('lodash');
 var host = 'localhost';
 var port = 3000;
-var helper = require('./helper')(host, port);
+var request = require('supertest')('http://localhost:3000');
 
 describe('Mongoose Example', function() {
     before(function(done) {
@@ -26,7 +26,10 @@ describe('Mongoose Example', function() {
             app.value('Cat', model);
         }
         app.listen(port); 
-        helper.postJson('/purge', {}, {success:true}, done);
+        request
+            .post('/purge')
+            .send({})
+            .expect({success:true}, done);
     });
 
     it('exists', function() {
@@ -51,27 +54,60 @@ describe('Mongoose Example', function() {
     }
 
     it('starts with no kittens', function(done) {
-        helper.expectJson('/kittens', [], done);
+        request
+            .get('/kittens')
+            .expect([], done);
     });
 
     it('adds a kitten', function(done) {
-        helper.postJson('/kittens', kitten1, {success:true}, function() {
-            helper.expectJson('/kittens', function(response) {
-                compareKittens([kitten1], JSON.parse(response))
-            }, done);
-        });
+        request
+            .post('/kittens')
+            .send(kitten1)
+            .expect({success:true})
+            .end(function() {
+                request
+                    .get('/kittens')
+                    .end(function(err, res) {
+                        compareKittens([kitten1], res.body);
+                        done();
+                    });
+            });
     });
 
     it('adds multiple kittens', function(done) {
-        helper.postJson('/purge', {}, {success:true}, function() {
-            helper.postJson('/kittens', kitten1, {success:true}, function() {
-                helper.postJson('/kittens', kitten2, {success:true}, function() {
-                    helper.expectJson('/kittens', function(response) {
-                        compareKittens([kitten1, kitten2], JSON.parse(response))
-                    }, done);
+        function purge() {
+            request
+                .post('/purge')
+                .send({})
+                .expect({success:true}, addKitten1);
+        }
+        function addKitten1(err) {
+            if (err) return done(err);
+            request
+                .post('/kittens')
+                .send(kitten1)
+                .expect({success:true})
+                .end(addKitten2);
+        }
+        function addKitten2(err) {
+            if (err) return done(err);
+            request
+                .post('/kittens')
+                .send(kitten2)
+                .expect({success:true})
+                .end(getKittens);
+        }
+        function getKittens(err) {
+            if (err) return done(err);
+            request
+                .get('/kittens')
+                .end(function(err, res) {
+                    if (err) return done(err);
+                    compareKittens([kitten1, kitten2], res.body);
+                    done();
                 });
-            });
-        });
+        }
+        purge(); // Kick off call chain
     });
 
     after(function(done) {

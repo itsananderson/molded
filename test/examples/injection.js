@@ -3,7 +3,7 @@ var http = require('http');
 var injection = require('../../examples/injection');
 var host = 'localhost';
 var port = 3000;
-var helper = require('./helper')(host, port);
+var request = require('supertest')('http://localhost:3000');
 
 describe('Injection Example', function() {
     before(function() {
@@ -25,15 +25,21 @@ describe('Injection Example', function() {
     };
 
     it('knows who I am', function(done) {
-        helper.expectJson('/me', user1, done);
+        request
+            .get('/me')
+            .expect(user1, done);
     });
 
     it('finds user1', function(done) {
-        helper.expectJson('/user1', user1, done);
+        request
+            .get('/user1')
+            .expect(user1, done);
     });
 
     it('finds user2', function(done) {
-        helper.expectJson('/user2', user2, done);
+        request
+            .get('/user2')
+            .expect(user2, done);
     });
 
     after(function(done) {
