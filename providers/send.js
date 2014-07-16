@@ -1,18 +1,14 @@
-function contentTypeDefined(res) {
-    return res.headersSent ||
-        undefined !== res.getHeader('content-type');
-}
+var contentTypeDefined = require('../lib/util/content-type-defined');
 
-function send(sendJson, status, content) {
-    var args = Array.prototype.slice.apply(arguments);
+function send(sendJson, contentType, header, status, content) {
     if (typeof status === 'number') {
-        this.statusCode = args.shift();
+        this.statusCode = status;
     } else {
         content = status;
     }
     if (typeof content === 'string') {
-        if (!contentTypeDefined(this)) {
-            this.setHeader('Content-Type', 'text/html');
+        if (!contentTypeDefined(this, header)) {
+            contentType('html');
         }
         this.write(content);
         this.end();
@@ -27,7 +23,7 @@ function send(sendJson, status, content) {
 }
 
 module.exports = function() {
-    return function(res, sendJson) {
-        return send.bind(res, sendJson);
+    return function(res, sendJson, contentType, header) {
+        return send.bind(res, sendJson, contentType, header);
     };
 };

@@ -64,7 +64,7 @@ describe('Kitchen Sink Example', function() {
             .set('Accept-Encoding', 'gzip')
             .set('Accept-Charset', 'utf8')
             .set('Accept-Language', 'en')
-            .expect('Content-Type', 'text/plain')
+            .expect('Content-Type', 'text/plain; charset=utf-8')
             .expect(expectedResponse, done);
     });
 
@@ -104,24 +104,24 @@ describe('Kitchen Sink Example', function() {
             .expect('file', done);
     });
 
-    function testFormat(type, expected, done) {
+    function testFormat(type, expectCharset, expected, done) {
         request
             .get('/format')
             .set('Accept', type)
-            .expect('Content-Type', type)
+            .expect('Content-Type', type + (expectCharset ? '; charset=utf-8' : ''))
             .expect(expected, done);
     }
 
     it('formats text', function(done) {
-        testFormat('text/plain', 'Here is some text', done);
+        testFormat('text/plain', true, 'Here is some text', done);
     });
 
     it('formats html', function(done) {
-        testFormat('text/html', '<b>Here is some html</b>', done);
+        testFormat('text/html', true, '<b>Here is some html</b>', done);
     });
 
     it('formats json', function(done) {
-        testFormat('application/json', {message: 'Here is some json'}, done);
+        testFormat('application/json', false, {message: 'Here is some json'}, done);
     });
 
     it('adds Vary header', function(done) {

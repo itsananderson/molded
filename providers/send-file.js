@@ -1,6 +1,6 @@
 var send = require('send');
 
-sendFile = function(req, next, path, options, fn){
+sendFile = function(req, next, header, path, options, fn){
   options = options || {};
   var self = this;
   var done;
@@ -56,7 +56,7 @@ sendFile = function(req, next, path, options, fn){
 
       for (var i = 0; i < keys.length; i++) {
         var k = keys[i];
-        res.setHeader(k, obj[k]);
+        header(k, obj[k]);
       }
     });
   }
@@ -67,7 +67,7 @@ sendFile = function(req, next, path, options, fn){
 };
 
 module.exports = function() {
-    return function(res, req, next) {
-        return sendFile.bind(res, req, next);
+    return function(res, req, next, header) {
+        return sendFile.bind(res, req, next, header);
     };
 };

@@ -1,18 +1,15 @@
-function contentTypeDefined(res) {
-    return res.headersSent ||
-        undefined !== res.getHeader('content-type');
-}
+var contentTypeDefined = require('../lib/util/content-type-defined');
 
-function sendJson(content) {
-    if (!contentTypeDefined(this)) {
-        this.setHeader('Content-Type', 'application/json');
+function sendJson(contentType, header, content) {
+    if (!contentTypeDefined(this, header)) {
+        contentType('json');
     }
     this.write(JSON.stringify(content));
     this.end();
 }
 
 module.exports = function() {
-    return function(res) {
-        return sendJson.bind(res);
+    return function(res, contentType, header) {
+        return sendJson.bind(res, contentType, header);
     };
 };

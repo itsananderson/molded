@@ -20,8 +20,8 @@ app.get('/languages', function(acceptsLanguages, send) {
 });
 
 
-app.get('/range', function(range, res, send) {
-    res.setHeader('Content-Type', 'text/plain');
+app.get('/range', function(range, res, send, contentType) {
+    contentType('txt');
     var requestedRange = range(1024);
     if (requestedRange) {
         var message = util.format('Range: "%s"\n', requestedRange.type);
