@@ -47,6 +47,10 @@ app.get(/^\/foo\/bar(.*)$/, function(params, send) {
     send(params[0]);
 });
 
+app.get('/status/:status', function(params, send) {
+    send(parseInt(params.status), params.status);
+});
+
 app.get('/json', function(req, sendJson) {
     sendJson({here:'is',some:'json'});
 });

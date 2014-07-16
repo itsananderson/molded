@@ -21,6 +21,12 @@ describe('Kitchen Sink Example', function() {
             .expect('/123', done);
     });
 
+    it('returns a custom status', function(done) {
+        request
+            .get('/status/202')
+            .expect(202, '202', done);
+    });
+
     it('returns json', function(done) {
         request
             .get('/json')
