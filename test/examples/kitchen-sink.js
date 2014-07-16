@@ -96,6 +96,13 @@ describe('Kitchen Sink Example', function() {
             .expect(/ENOENT, stat .*file404\.txt/, done);
     });
 
+    it('downloads a file', function(done) {
+        request
+            .get('/download')
+            .expect('Content-Disposition', 'attachment; filename="file123.txt"')
+            .expect('file', done);
+    });
+
     it('lets providers call next', function(done) {
         request
             .get('/next')

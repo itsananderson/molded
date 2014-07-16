@@ -94,6 +94,10 @@ app.get('/file404', function(sendFile) {
     sendFile(path.join(__dirname, 'file404.txt'));
 });
 
+app.get('/download', function(download) {
+    download(path.join(__dirname, 'file.txt'), 'file123.txt');
+});
+
 app.get('/next', function(callNext, send) {
     send("Shouldn't get here");
 });
