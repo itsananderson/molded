@@ -64,6 +64,7 @@ describe('Kitchen Sink Example', function() {
             .set('Accept-Encoding', 'gzip')
             .set('Accept-Charset', 'utf8')
             .set('Accept-Language', 'en')
+            .expect('Content-Type', 'text/plain')
             .expect(expectedResponse, done);
     });
 

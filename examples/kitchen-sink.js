@@ -67,13 +67,13 @@ app.get('/rand', function(send, randString) {
     send(randString);
 });
 
-app.get('/accepts', function(res, send, accepts, acceptsEncodings, acceptsCharsets, acceptsLanguages) {
+app.get('/accepts', function(res, send, accepts, acceptsEncodings, acceptsCharsets, acceptsLanguages, contentType) {
     var stats =
         'favored content type: ' + accepts('txt','html','xml') + '\n' + 
         'favored encoding: ' + acceptsEncodings('gzip') + '\n' + 
         'favored charset: ' + acceptsCharsets('utf8') + '\n' +
         'favored language: ' + acceptsLanguages('en', 'es');
-    res.setHeader('Content-Type', 'text/plain');
+    contentType('txt');
     send(stats);
 });
 
