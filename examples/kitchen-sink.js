@@ -126,6 +126,15 @@ app.get('/vary', function(vary, send) {
     send('Added Vary header');
 })
 
+app.get('/location', function(res, location) {
+    location('/location2');
+    res.end();
+});
+
+app.get('/location2', function(send) {
+    send('Hello from location2');
+});
+
 app.error(function(err, res, send) {
     res.statusCode = err.status || 500;
     send(err.message);

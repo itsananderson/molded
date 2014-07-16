@@ -136,4 +136,11 @@ describe('Kitchen Sink Example', function() {
             .get('/next')
             .expect('Should get here', done);
     });
+
+    it('sets location', function(done) {
+        request
+            .get('/location')
+            .expect('Location', /\/location2/)
+            .expect('', done);
+    });
 });
