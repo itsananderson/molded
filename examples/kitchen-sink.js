@@ -106,6 +106,26 @@ app.get('/next', function(send) {
     send('Should get here');
 });
 
+app.get('/format', function(format, contentType, send, sendJson) {
+    format({
+        'text/plain': function() {
+            contentType('txt');
+            send('Here is some text');
+        },
+        'text/html': function() {
+            send('<b>Here is some html</b>');
+        },
+        'application/json': function() {
+            sendJson({message: 'Here is some json'});
+        }
+    });
+});
+
+app.get('/vary', function(vary, send) {
+    vary('Accept');
+    send('Added Vary header');
+})
+
 app.error(function(err, res, send) {
     res.statusCode = err.status || 500;
     send(err.message);

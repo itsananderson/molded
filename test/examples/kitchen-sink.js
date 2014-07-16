@@ -104,6 +104,33 @@ describe('Kitchen Sink Example', function() {
             .expect('file', done);
     });
 
+    function testFormat(type, expected, done) {
+        request
+            .get('/format')
+            .set('Accept', type)
+            .expect('Content-Type', type)
+            .expect(expected, done);
+    }
+
+    it('formats text', function(done) {
+        testFormat('text/plain', 'Here is some text', done);
+    });
+
+    it('formats html', function(done) {
+        testFormat('text/html', '<b>Here is some html</b>', done);
+    });
+
+    it('formats json', function(done) {
+        testFormat('application/json', {message: 'Here is some json'}, done);
+    });
+
+    it('adds Vary header', function(done) {
+        request
+            .get('/vary')
+            .expect('Vary', 'Accept')
+            .expect('Added Vary header', done);
+    });
+
     it('lets providers call next', function(done) {
         request
             .get('/next')
