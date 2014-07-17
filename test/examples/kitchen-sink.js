@@ -156,4 +156,11 @@ describe('Kitchen Sink Example', function() {
             .expect('Set-Cookie', 'name=bob; Path=/')
             .expect('Set a cookie', done);
     });
+
+    it('clears a cookie', function(done) {
+        request
+            .get('/clear-cookie')
+            .expect('Set-Cookie', 'name=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT')
+            .expect('Cleared cookie', done);
+    });
 });

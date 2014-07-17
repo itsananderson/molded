@@ -144,6 +144,11 @@ app.get('/cookie/:name', function(params, send, cookie) {
     send('Set a cookie');
 });
 
+app.get('/clear-cookie', function(send, clearCookie) {
+    clearCookie('name');
+    send('Cleared cookie');
+});
+
 // TODO: more cookie examples
 
 app.error(function(err, res, send) {
