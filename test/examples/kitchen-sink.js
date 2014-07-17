@@ -149,4 +149,11 @@ describe('Kitchen Sink Example', function() {
             .expect('Location', /\/location2/)
             .expect('', done);
     });
+
+    it('sets a cookie', function(done) {
+        request
+            .get('/cookie/bob')
+            .expect('Set-Cookie', 'name=bob; Path=/')
+            .expect('Set a cookie', done);
+    });
 });

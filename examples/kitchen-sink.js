@@ -139,6 +139,13 @@ app.get('/location2', function(send) {
     send('Hello from location2');
 });
 
+app.get('/cookie/:name', function(params, send, cookie) {
+    cookie('name', params.name);
+    send('Set a cookie');
+});
+
+// TODO: more cookie examples
+
 app.error(function(err, res, send) {
     res.statusCode = err.status || 500;
     send(err.message);
