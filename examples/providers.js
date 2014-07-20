@@ -42,6 +42,14 @@ app.post('/typeis', function(typeIs, send) {
     }
 });
 
+app.post('/typeis-alt', function(typeIs, send) {
+    if (typeIs(['application/json'])) {
+        send('Thanks for the JSON :)');
+    } else {
+        send('Only application/json is accepted');
+    }
+});
+
 /* istanbul ignore else */
 if (module.parent) {
     module.exports = app;

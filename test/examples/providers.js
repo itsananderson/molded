@@ -73,4 +73,18 @@ describe('Providers Example', function() {
             .send('hello world')
             .expect('Only application/json is accepted', done);
     });
+
+    it('alt: checks content-type - valid', function(done) {
+        request
+            .post('/typeis-alt')
+            .send({name:'bob'})
+            .expect('Thanks for the JSON :)', done);
+    });
+
+    it('alt: checks content-type - invalid', function(done) {
+        request
+            .post('/typeis-alt')
+            .send('hello world')
+            .expect('Only application/json is accepted', done);
+    });
 });
