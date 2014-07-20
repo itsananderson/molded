@@ -116,6 +116,10 @@ app.get('/download', function(download) {
     download(path.join(__dirname, 'file.txt'), 'file123.txt');
 });
 
+app.get('/download-alt', function(res, download) {
+    download(path.join(__dirname, 'file.txt'), function() {});
+});
+
 /* istanbul ignore next */
 app.get('/next', function(callNext, send) {
     send("Shouldn't get here");

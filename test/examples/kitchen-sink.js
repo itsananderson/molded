@@ -125,6 +125,13 @@ describe('Kitchen Sink Example', function() {
             .expect('file', done);
     });
 
+    it('downloads a file, alternate', function(done) {
+        request
+            .get('/download-alt')
+            .expect('Content-Disposition', 'attachment; filename="file.txt"')
+            .expect('file', done);
+    });
+
     function testFormat(type, expectCharset, expected, done) {
         request
             .get('/format')
