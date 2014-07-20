@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 
 var app = injector();
 
+app.value('secret', 'Secret Cookie Signature');
+
 app.value('port', 3000);
 
 app.singleton('single', function(port) {
@@ -151,6 +153,11 @@ app.get('/location2', function(send) {
 app.get('/cookie/:name', function(params, send, cookie) {
     cookie('name', params.name);
     send('Set a cookie');
+});
+
+app.get('/signed-cookie/:name', function(params, send, cookie) {
+    cookie('name', params.name, {signed: true});
+    send('Set a signed cookie');
 });
 
 app.get('/clear-cookie', function(send, clearCookie) {

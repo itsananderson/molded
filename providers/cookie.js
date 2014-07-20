@@ -2,9 +2,9 @@ var mixin = require('utils-merge');
 var sign = require('cookie-signature').sign;
 var _cookie = require('cookie');
 
-function cookie(req, header, name, val, options){
+function cookie(req, secret, header, name, val, options){
   options = mixin({}, options);
-  var secret = req.secret;
+  var secret = secret || req.secret;
   var signed = options.signed;
   if (signed && !secret) throw new Error('cookieParser("secret") required for signed cookies');
   if ('number' == typeof val) val = val.toString();
@@ -31,7 +31,7 @@ function cookie(req, header, name, val, options){
 };
 
 module.exports = function() {
-    return function(res, req, header) {
-        return cookie.bind(res, req, header);
-    }
+    return ['res', 'req', 'secret_', 'header', function(req, res, secret, header) {
+        return cookie.bind(res, req, secret, header);
+    }];
 };

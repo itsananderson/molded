@@ -4,6 +4,9 @@ var fork = require('child_process').fork;
 var app = require('../../examples/kitchen-sink');
 var request = require('supertest')(app);
 
+var sign = require('cookie-signature').sign;
+var cookie = require('cookie');
+
 describe('Kitchen Sink Example', function() {
     it('exists', function() {
         assert(app != undefined);
@@ -167,6 +170,15 @@ describe('Kitchen Sink Example', function() {
             .get('/cookie/bob')
             .expect('Set-Cookie', 'name=bob; Path=/')
             .expect('Set a cookie', done);
+    });
+
+    it('sets a signed cookie', function(done) {
+        var signed = 's:' + sign('bob', 'Secret Cookie Signature');
+        request
+            .get('/signed-cookie/bob')
+            .expect('Set-Cookie', cookie.serialize('name', signed)
+                + '; Path=/')
+            .expect('Set a signed cookie', done);
     });
 
     it('clears a cookie', function(done) {
