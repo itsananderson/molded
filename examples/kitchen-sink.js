@@ -71,6 +71,15 @@ app.get('/rand', function(send, randString) {
     send(randString);
 });
 
+app.get('/randOptional', function(send, randString_, optional_) {
+    send(optional_);
+});
+
+app.get('/randOptionalDefault', function(send, optional_) {
+    var optional = optional_ || 'sam';
+    send(optional);
+});
+
 app.get('/accepts', function(res, send, accepts, acceptsEncodings, acceptsCharsets, acceptsLanguages, contentType) {
     var stats =
         'favored content type: ' + accepts('txt','html','xml') + '\n' + 

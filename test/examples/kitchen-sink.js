@@ -59,6 +59,18 @@ describe('Kitchen Sink Example', function() {
             .expect(/port: 3000 0\.[0-9]+/, done);
     });
 
+    it('has optional dependencies', function(done) {
+        request
+            .get('/randOptional')
+            .expect('undefined', done);
+    });
+
+    it('has optional dependencies with defaults', function(done) {
+        request
+            .get('/randOptionalDefault')
+            .expect('sam', done);
+    });
+
     it('checks accepts headers', function(done) {
         var expectedResponse = 'favored content type: txt\n' +
             'favored encoding: gzip\n' +
