@@ -154,6 +154,11 @@ app.get('/location', function(res, location) {
     res.end();
 });
 
+app.get('/location-back', function(res, location) {
+    location('back');
+    res.end();
+});
+
 /* istanbul ignore next */
 app.get('/location2', function(send) {
     send('Hello from location2');

@@ -172,6 +172,21 @@ describe('Kitchen Sink Example', function() {
             .expect('', done);
     });
 
+    it('sets location with "back"', function(done) {
+        request
+            .get('/location-back')
+            .expect('Location', '/')
+            .expect('', done);
+    });
+
+    it('sets location with "back" and Referrer', function(done) {
+        request
+            .get('/location-back')
+            .set('Referrer', '/test')
+            .expect('Location', '/test')
+            .expect('', done);
+    });
+
     it('sets a cookie', function(done) {
         request
             .get('/cookie/bob')

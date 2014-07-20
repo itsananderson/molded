@@ -1,6 +1,6 @@
 function location(req, header, url){
   // "back" is an alias for the referrer
-  if ('back' == url) url = header('Referrer') || '/';
+  if ('back' == url) url = req.headers['referrer'] || '/';
 
   // Respond
   header('Location', url);
