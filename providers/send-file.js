@@ -17,6 +17,7 @@ sendFile = function(req, next, header, path, options, fn){
 
   // errors
   function error(err) {
+    /* istanbul ignore if */
     if (done) return;
     done = true;
 
@@ -24,6 +25,7 @@ sendFile = function(req, next, header, path, options, fn){
     cleanup();
 
     // callback available
+    /* istanbul ignore if */
     if (fn) return fn(err);
 
     // delegate
@@ -32,6 +34,7 @@ sendFile = function(req, next, header, path, options, fn){
 
   // streaming
   function stream(stream) {
+    /* istanbul ignore if */
     if (done) return;
     cleanup();
     if (fn) stream.on('end', fn);

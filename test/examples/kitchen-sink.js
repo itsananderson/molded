@@ -112,6 +112,12 @@ describe('Kitchen Sink Example', function() {
             .expect('file', done);
     });
 
+    it('sends a file with callback', function(done) {
+        request
+            .get('/file-alt')
+            .expect('file', done);
+    });
+
     it("sendFile fails when file doesn't exist", function(done) {
         request
             .get('/file404')

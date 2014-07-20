@@ -107,6 +107,10 @@ app.get('/file', function(sendFile) {
     sendFile(path.join(__dirname, 'file.txt'));
 });
 
+app.get('/file-alt', function(sendFile) {
+    sendFile(path.join(__dirname, 'file.txt'), function(){});
+});
+
 app.get('/file404', function(sendFile) {
     // This file shouldn't exist
     sendFile(path.join(__dirname, 'file404.txt'));
