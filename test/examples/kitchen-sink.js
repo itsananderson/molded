@@ -30,6 +30,18 @@ describe('Kitchen Sink Example', function() {
             .expect(202, '202', done);
     });
 
+    it('returns a buffer', function(done) {
+        request
+            .get('/send-buffer')
+            .expect('hello buffer', done);
+    });
+
+    it('returns json with send', function(done) {
+        request
+            .get('/send-json')
+            .expect({success:true}, done);
+    });
+
     it('returns json', function(done) {
         request
             .get('/json')

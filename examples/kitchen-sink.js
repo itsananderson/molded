@@ -54,6 +54,14 @@ app.get('/status/:status', function(params, send) {
     send(parseInt(params.status), params.status);
 });
 
+app.get('/send-buffer', function(send) {
+    send(new Buffer('hello buffer', 'utf8'));
+});
+
+app.get('/send-json', function(send) {
+    send({success:true});
+});
+
 app.get('/json', function(req, sendJson) {
     sendJson({here:'is',some:'json'});
 });
