@@ -26,7 +26,7 @@ function format(req, next, accepts, vary, contentType, obj){
 };
 
 module.exports = function() {
-    return function(res, req, next, accepts, contentType, vary) {
+    return function(res, req, next, accepts, vary, contentType) {
         return format.bind(res, req, next, accepts, vary, contentType);
     };
 };
