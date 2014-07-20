@@ -26,12 +26,13 @@ function cookie(req, secret, header, name, val, options){
       headerVal = [prev, headerVal];
     }
   }
+
   header('Set-Cookie', headerVal);
   return this;
 };
 
 module.exports = function() {
-    return ['res', 'req', 'secret_', 'header', function(req, res, secret, header) {
-        return cookie.bind(res, req, secret, header);
+    return ['req', 'res', 'secret_', 'header', function(req, res, secret, header) {
+        return cookie.bind(req, res, secret, header);
     }];
 };
