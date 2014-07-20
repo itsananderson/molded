@@ -8,6 +8,15 @@ describe('Errors Example', function() {
         assert(app != undefined);
     });
 
+    it('handles exceptions in providers', function(done) {
+        request
+            .get('/broken')
+            .end(function(err, res) {
+                assert.equal(res.body.message, 'Oh noes');
+                done();
+            });
+    });
+
     it('falls through error handlers', function(done) {
         request
             .get('/fail')

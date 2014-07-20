@@ -22,6 +22,19 @@ describe('Providers Example', function() {
             .expect('En Español', done);
     });
 
+    it('handles unsupported languages', function(done) {
+        request
+            .get('/languages')
+            .set('Accept-Language', 'fr')
+            .expect('Requested language(s) not supported', done);
+    });
+
+    it('checks range - not provided', function(done) {
+        request
+            .get('/range')
+            .expect('No range header specified', done);
+    });
+
     it('checks range - single', function(done) {
         var expRes = 'Range: "bytes"\n\tStart: 0,\tEnd: 100';
         request

@@ -25,6 +25,7 @@ app.provide('callNext', function(next) {
 
 app.provide('delay', function() {
     var deferred = q.defer();
+    /* istanbul ignore next */
     setTimeout(function() {
         deferred.resolve('done delaying');
     }, 1000);
@@ -92,10 +93,12 @@ app.get('/accepts', function(res, send, accepts, acceptsEncodings, acceptsCharse
     send(stats);
 });
 
+/* istanbul ignore next */
 app.get('/delay', function(delay, send) {
     send('delayed ' + delay);
 });
 
+/* istanbul ignore next */
 app.get('/error', function(promiseError, send) {
     send("Shouldn't get here");
 });
@@ -113,6 +116,7 @@ app.get('/download', function(download) {
     download(path.join(__dirname, 'file.txt'), 'file123.txt');
 });
 
+/* istanbul ignore next */
 app.get('/next', function(callNext, send) {
     send("Shouldn't get here");
 });
@@ -146,6 +150,7 @@ app.get('/location', function(res, location) {
     res.end();
 });
 
+/* istanbul ignore next */
 app.get('/location2', function(send) {
     send('Hello from location2');
 });
@@ -174,6 +179,7 @@ app.error(function(err, res, send) {
 
 app.use(serveIndex(__dirname));
 
+/* istanbul ignore else */
 if (module.parent) {
     module.exports = app;
 } else {

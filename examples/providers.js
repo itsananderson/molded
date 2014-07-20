@@ -42,6 +42,7 @@ app.post('/typeis', function(typeIs, send) {
     }
 });
 
+/* istanbul ignore else */
 if (module.parent) {
     module.exports = app;
 } else {

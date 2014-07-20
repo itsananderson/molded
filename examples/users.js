@@ -23,6 +23,7 @@ app.post('/purge', function(sendJson) {
     sendJson({success:true});
 });
 
+/* istanbul ignore else */
 if (module.parent) {
     module.exports = app;
 } else {

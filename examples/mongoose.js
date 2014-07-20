@@ -40,6 +40,7 @@ app.error(function(err, sendJson) {
     sendJson(err);
 });
 
+/* istanbul ignore else */
 if (module.parent) {
     module.exports = {app:app,db:mongoose};
 } else {

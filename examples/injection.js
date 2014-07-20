@@ -24,14 +24,15 @@ app.get('/me', function(sendJson, user1) {
     sendJson(user1);
 });
 
-app.get('/:user', function(sendJson, next, user) {
+app.get('/:user', function(sendJson, next, params, user) {
     if (user) {
         sendJson(user);
     } else {
-        next();
+        sendJson({error: params.user + ' does not exist'});
     }
 });
 
+/* istanbul ignore else */
 if (module.parent) {
     module.exports = app;
 } else {

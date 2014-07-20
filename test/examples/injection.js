@@ -35,4 +35,10 @@ describe('Injection Example', function() {
             .get('/user2')
             .expect(user2, done);
     });
+
+    it('handles non-existent user', function(done) {
+        request
+            .get('/user3')
+            .expect({error: 'user3 does not exist'}, done);
+    });
 });

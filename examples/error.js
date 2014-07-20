@@ -7,6 +7,8 @@ app.value('port', 3000);
 app.provide('broken', function() {
     throw Error('Oh noes');
 });
+
+/* istanbul ignore next */
 app.get('/broken', function(broken) {
     throw Error("Shouldn't get here");
 });
@@ -36,6 +38,7 @@ app.error(function(res, sendJson, err)  {
     sendJson({message: err.message, error: err});
 });
 
+/* istanbul ignore else */
 if (module.parent) {
     module.exports = app;
 } else {

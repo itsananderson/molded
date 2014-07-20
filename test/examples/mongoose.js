@@ -108,6 +108,45 @@ describe('Mongoose Example', function() {
         purge(); // Kick off call chain
     });
 
+    it('throws error when inserting the same id', function(done) {
+        var id = '53cbb6b2eae2e0781ef95784';
+        var cat1 = {
+            _id: id,
+            name: 'Fluffy'
+        };
+        var cat2 = {
+            _id: id,
+            name: 'Mittens'
+        };
+        function purge() {
+            request
+                .post('/purge')
+                .send({})
+                .expect({success:true}, addCat1);
+        }
+        function addCat1(err) {
+            if (err) return done(err);
+            request
+                .post('/kittens')
+                .send(cat1)
+                .expect({success:true})
+                .end(addCat2);
+        }
+        function addCat2(err) {
+            if (err) return done(err);
+            request
+                .post('/kittens')
+                .send(cat2)
+                .end(function(err, result) {
+                    assert(/E11000 duplicate key error index/
+                        .test(result.body.err),
+                        'Unexpected error: ' + result.body.err);
+                    done();
+                });
+        }
+        purge(); // Kick off call chain
+    });
+
     after(function() {
         db.disconnect();
     });
