@@ -4,7 +4,8 @@
   "description": "REST server library with dependency injection",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha"
+    "test": "./node_modules/.bin/mocha",
+    "cover": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha"
   },
   "keywords": [
     "rest",
@@ -39,6 +40,7 @@
   "homepage": "https://github.com/itsananderson/molded",
   "devDependencies": {
     "body-parser": "^1.4.3",
+    "istanbul": "^0.3.0",
     "mocha": "^1.20.1",
     "mongoose": "^3.8.13",
     "morgan": "^1.1.1",
