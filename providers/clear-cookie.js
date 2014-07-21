@@ -1,10 +1,10 @@
 var mixin = require('utils-merge');
 
 function clearCookie(cookie, name, options) {
-  var opts = { expires: new Date(1), path: '/' };
-  return cookie(name, '', options
-    ? mixin(opts, options)
-    : opts);
+    var opts = { expires: new Date(1), path: '/' };
+    return cookie(name, '', options
+        ? mixin(opts, options)
+        : opts);
 };
 
 module.exports = function() {

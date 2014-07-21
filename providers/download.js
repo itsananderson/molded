@@ -1,20 +1,20 @@
 var contentDisposition = require('../lib/util/content-disposition.js');
 
 function download(sendFile, path, filename, fn){
-  // support function as second arg
-  if ('function' == typeof filename) {
-    fn = filename;
-    filename = null;
-  }
+    // support function as second arg
+    if ('function' == typeof filename) {
+        fn = filename;
+        filename = null;
+    }
 
-  filename = filename || path;
+    filename = filename || path;
 
-  // set Content-Disposition when file is sent
-  var headers = {
-    'Content-Disposition': contentDisposition(filename)
-  };
+    // set Content-Disposition when file is sent
+    var headers = {
+        'Content-Disposition': contentDisposition(filename)
+    };
 
-  return sendFile(path, { headers: headers }, fn);
+    return sendFile(path, { headers: headers }, fn);
 };
 
 module.exports = function() {
