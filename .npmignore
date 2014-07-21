@@ -1,2 +1,5 @@
+coverage/
 examples/
 test/
+.travis.yml
+
