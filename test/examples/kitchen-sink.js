@@ -12,6 +12,12 @@ describe('Kitchen Sink Example', function() {
         assert(app != undefined);
     });
 
+    it('sends 404 if no route found', function(done) {
+        request
+            .get('/notfound')
+            .expect("Can't GET /notfound", done);
+    });
+
     it('greets users with their name and age', function(done) {
         request
             .get('/greet/bob/25')
@@ -226,5 +232,14 @@ describe('Kitchen Sink Example', function() {
             .get('/clear-cookie')
             .expect('Set-Cookie', 'name=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT')
             .expect('Cleared cookie', done);
+    });
+
+    it('has a default error handler', function(done) {
+        request
+            .get('/error-pass')
+            .expect(500, 'An error has occurred. '
+                + 'Either there are no error handlers, '
+                + 'or the associated error handler(s) '
+                + 'also threw error(s).', done);
     });
 });

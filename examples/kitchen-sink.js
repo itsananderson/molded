@@ -19,10 +19,6 @@ app.provide('randString', function(single) {
     return single + ' ' + Math.random();
 });
 
-app.provide('callNext', function(next) {
-    next();
-});
-
 app.provide('delay', function() {
     var deferred = q.defer();
     /* istanbul ignore next */
@@ -36,6 +32,10 @@ app.provide('promiseError', function() {
     return q.fcall(function() {
         throw Error('Should catch this');
     });
+});
+
+app.provide('callNext', function(next) {
+    next();
 });
 
 app.use(serveStatic(__dirname));
@@ -193,7 +193,14 @@ app.get('/clear-cookie', function(send, clearCookie) {
 
 // TODO: more cookie examples
 
-app.error(function(err, res, send) {
+app.get('/error-pass', function(next) {
+    next(new Error('pass'));
+});
+
+app.error(function(err, res, send, next) {
+    if ('pass' === err.message) {
+        next(err);
+    }
     res.statusCode = err.status || 500;
     send(err.message);
 });
