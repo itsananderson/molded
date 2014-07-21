@@ -1,6 +1,6 @@
 {
   "name": "molded",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "REST server library with dependency injection",
   "main": "index.js",
   "scripts": {
