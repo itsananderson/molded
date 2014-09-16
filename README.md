@@ -110,6 +110,7 @@ As a more practical example, consider the following Mongoose database setup.
 
 ```javascript
 var bodyParser = require('body-parser');
+var q = require('q');
 var mongoose = require('mongoose');
 var connectionString = 'mongodb://localhost/test';
 mongoose.connect(connectionString);
