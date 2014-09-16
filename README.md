@@ -101,7 +101,7 @@ app.singleton('user1', function(users) {
     return users['user1'];
 });
 
-app.get('/me', function(res, sendJson) {
+app.get('/me', function(user1, sendJson) {
     sendJson(user1);
 });
 ```
