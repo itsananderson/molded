@@ -14,7 +14,15 @@
     "ioc"
   ],
   "author": "Will Anderson",
+  "contributors": [
+    {
+      "name": "Will Anderson",
+      "email": "will@itsananderson.com",
+      "url": "http://willi.am/"
+    }
+  ],
   "license": "MIT",
+  "engines" : { "node" : ">=0.10 <0.12" },
   "dependencies": {
     "accepts": "^1.0.7",
     "cookie": "^0.1.2",
