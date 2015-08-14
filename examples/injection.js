@@ -1,5 +1,6 @@
+var express = require('express');
+var app = express();
 var molded = require('../');
-var app = molded();
 
 app.set('port', 3000);
 app.set('users', {
@@ -13,13 +14,13 @@ app.set('users', {
     }
 });
 
-app.provide('user1', function(users) {
+app.use(molded.provide('user1', function(users) {
     return users['user1'];
-});
+}));
 
-app.provide('/:user', 'user', function(params, users) {
+app.use(molded.provide('/:user', 'user', function(params, users) {
     return users[params.user];
-});
+}));
 
 app.get('/me', function(sendJson, user1) {
     sendJson(user1);

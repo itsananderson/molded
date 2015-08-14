@@ -1,42 +1,43 @@
-var injector = require('../');
+var express = require('express');
 var path = require('path');
 var q = require('q');
 var serveStatic = require('serve-static');
 var serveIndex = require('serve-index');
 var bodyParser = require('body-parser');
+var molded = require('../');
 
-var app = injector();
+var app = express();
 
 app.set('secret', 'Secret Cookie Signature');
 
 app.set('port', 3000);
 
-app.provide('single', function(port) {
+app.use(molded.provide('single', function(port) {
     return 'port: ' + port;
-});
+}));
 
-app.provide('randString', function(single) {
+app.use(molded.provide('randString', function(single) {
     return single + ' ' + Math.random();
-});
+}));
 
-app.provide('delay', function() {
+app.use(molded.provide('delay', function() {
     var deferred = q.defer();
     /* istanbul ignore next */
     setTimeout(function() {
         deferred.resolve('done delaying');
     }, 1000);
     return deferred.promise;
-});
+}));
 
-app.provide('promiseError', function() {
+app.use(molded.provide('promiseError', function() {
     return q.fcall(function() {
         throw Error('Should catch this');
     });
-});
+}));
 
-app.provide('callNext', function(next) {
+app.use(molded.provide('callNext', function(next) {
     next();
-});
+}));
 
 app.use(serveStatic(__dirname));
 app.use(bodyParser.json());

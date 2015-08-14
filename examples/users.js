@@ -1,9 +1,9 @@
 var bodyParser = require('body-parser');
-var molded = require('../');
+var express = require('express');
 
 var users = [];
 
-var app = molded();
+var app = express();
 
 app.set('port', 3000);
 

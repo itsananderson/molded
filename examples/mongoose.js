@@ -1,6 +1,7 @@
 var q = require('q');
+var express = require('express');
 var molded = require('../');
-var app = molded();
+var app = express();
 
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
@@ -11,12 +12,12 @@ app.set('port', 3000);
 
 app.set('config', { db: mongoose, dbConnectionString: connectionString });
 
-app.provide('Cat', function catModelProvider(config) {
+app.use(molded.provide('Cat', function catModelProvider(config) {
     if (!catModelProvider.model) {
         catModelProvider.model = config.db.model('Cat', { name: String });
     }
     return catModelProvider.model;
-});
+}));
 
 app.use(bodyParser.json());
 

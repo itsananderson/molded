@@ -1,14 +1,9 @@
 "use strict";
 
-var express = require("express");
+var provide = require("./lib/provide");
+var inject = require("./lib/inject");
 
-function createApplication() {
-    var app = express();
-
-    app.provide = function() {
-    };
-
-    return app;
-}
-
-module.exports = createApplication;
+module.exports = {
+    provide: provide,
+    injet: inject
+};
