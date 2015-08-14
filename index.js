@@ -1,10 +1,6 @@
 "use strict";
 
-var mixin = require('utils-merge'),
-    EventEmitter = require('events').EventEmitter,
-    express = require("express");
-
-var proto = require('./lib/application');
+var express = require("express");
 
 function createApplication() {
     var app = express();
