@@ -27,6 +27,7 @@
     "accepts": "^1.0.7",
     "cookie": "^0.1.2",
     "cookie-signature": "^1.0.4",
+    "express": "^4.13.3",
     "func-deps": "^0.1.1",
     "lodash": "^2.4.1",
     "mime": "^1.2.11",
