@@ -199,7 +199,7 @@ app.get('/error-pass', function(next) {
 
 app.error(function(err, res, send, next) {
     if ('pass' === err.message) {
-        next(err);
+        return next(err);
     }
     res.statusCode = err.status || 500;
     send(err.message);
