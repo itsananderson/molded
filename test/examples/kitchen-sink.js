@@ -139,7 +139,7 @@ describe('Kitchen Sink Example', function() {
     it("sendFile fails when file doesn't exist", function(done) {
         request
             .get('/file404')
-            .expect(/ENOENT, stat .*file404\.txt/, done);
+            .expect(/ENOENT.*file404\.txt/, done);
     });
 
     it('downloads a file', function(done) {
