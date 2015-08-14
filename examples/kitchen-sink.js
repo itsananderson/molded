@@ -7,11 +7,11 @@ var bodyParser = require('body-parser');
 
 var app = injector();
 
-app.value('secret', 'Secret Cookie Signature');
+app.set('secret', 'Secret Cookie Signature');
 
-app.value('port', 3000);
+app.set('port', 3000);
 
-app.singleton('single', function(port) {
+app.provide('single', function(port) {
     return 'port: ' + port;
 });
 
@@ -197,12 +197,12 @@ app.get('/error-pass', function(next) {
     next(new Error('pass'));
 });
 
-app.error(function(err, res, send, next) {
+app.use(function(err, req, res, next) {
     if ('pass' === err.message) {
         return next(err);
     }
     res.statusCode = err.status || 500;
-    send(err.message);
+    res.send(err.message);
 });
 
 app.use(serveIndex(__dirname));
@@ -211,5 +211,5 @@ app.use(serveIndex(__dirname));
 if (module.parent) {
     module.exports = app;
 } else {
-    app.listen(app.value('port'));
+    app.listen(app.get('port'));
 }

@@ -7,12 +7,15 @@ var mongoose = require('mongoose');
 var connectionString = 'mongodb://localhost/test';
 mongoose.connect(connectionString);
 
-app.value('port', 3000);
+app.set('port', 3000);
 
-app.value('config', { db: mongoose, dbConnectionString: connectionString });
+app.set('config', { db: mongoose, dbConnectionString: connectionString });
 
-app.singleton('Cat', function(config) {
-    return config.db.model('Cat', { name: String });
+app.provide('Cat', function catModelProvider(config) {
+    if (!catModelProvider.model) {
+        catModelProvider.model = config.db.model('Cat', { name: String });
+    }
+    return catModelProvider.model;
 });
 
 app.use(bodyParser.json());
@@ -36,13 +39,13 @@ app.post('/purge', function(req, sendJson, Cat) {
     });
 });
 
-app.error(function(err, sendJson) {
-    sendJson(err);
+app.use(function(err, req, res, next) {
+    res.json(err);
 });
 
 /* istanbul ignore else */
 if (module.parent) {
     module.exports = {app:app,db:mongoose};
 } else {
-    app.listen(app.value('port'));
+    app.listen(app.get('port'));
 }

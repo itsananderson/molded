@@ -1,7 +1,8 @@
 var molded = require('../');
 var app = molded();
 
-app.value('users', {
+app.set('port', 3000);
+app.set('users', {
     'user1': {
         username: 'user1',
         email: 'user1@example.com'
@@ -12,7 +13,7 @@ app.value('users', {
     }
 });
 
-app.singleton('user1', function(users) {
+app.provide('user1', function(users) {
     return users['user1'];
 });
 
@@ -36,5 +37,5 @@ app.get('/:user', function(sendJson, next, params, user) {
 if (module.parent) {
     module.exports = app;
 } else {
-    app.listen(app.value('port'));
+    app.listen(app.get('port'));
 }

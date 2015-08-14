@@ -1,7 +1,7 @@
 var molded = require('../');
 var app = molded();
 
-app.value('port', 3000);
+app.set('port', 3000);
 
 // If a provider throws an exception, it is sent to the error handlers matching the request's route.
 app.provide('broken', function() {
@@ -18,7 +18,7 @@ app.get('/broken', function(broken) {
 app.get('/fail', function() {
     throw Error('What happens if the error handler fails?');
 });
-app.error('/fail', function(send) {
+app.use('/fail', function(req, res, send) {
     // 'something' is undefined
     send(something);
 });
@@ -33,14 +33,14 @@ app.get('/next', function(next) {
     next(Error('Something went wrong next'));
 });
 
-app.error(function(res, sendJson, err)  {
+app.use(function(err, req, res, next)  {
     res.statusCode = err.status || 500;
-    sendJson({message: err.message, error: err});
+    res.send({message: err.message, error: err});
 });
 
 /* istanbul ignore else */
 if (module.parent) {
     module.exports = app;
 } else {
-    app.listen(app.value('port'));
+    app.listen(app.get('port'));
 }

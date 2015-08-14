@@ -5,7 +5,7 @@ var users = [];
 
 var app = molded();
 
-app.value('port', 3000);
+app.set('port', 3000);
 
 app.use(bodyParser.json());
 
@@ -27,5 +27,5 @@ app.post('/purge', function(sendJson) {
 if (module.parent) {
     module.exports = app;
 } else {
-    app.listen(app.value('port'));
+    app.listen(app.get('port'));
 }

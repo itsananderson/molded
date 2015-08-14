@@ -2,7 +2,7 @@ var util = require('util');
 var molded = require('../');
 var app = molded();
 
-app.value('port', 3000);
+app.set('port', 3000);
 
 // TODO: Add examples for other core providers
 
@@ -54,5 +54,5 @@ app.post('/typeis-alt', function(typeIs, send) {
 if (module.parent) {
     module.exports = app;
 } else {
-    app.listen(app.value('port'));
+    app.listen(app.get('port'));
 }
