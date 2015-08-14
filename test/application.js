@@ -57,7 +57,6 @@ describe('application', function() {
         };
         function fail() {
             assert.fail('handler2', 'handler1', 'Expected handler 2');
-            console.log('handler1');
             done();
         }
         app.errorHandlers.push(definition.error('POST', /\//, 'handler1', function() {
