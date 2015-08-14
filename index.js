@@ -1,24 +1,17 @@
 "use strict";
 
 var mixin = require('utils-merge'),
-    EventEmitter = require('events').EventEmitter;
+    EventEmitter = require('events').EventEmitter,
+    express = require("express");
 
 var proto = require('./lib/application'),
     coreProviders = require('./lib/providers');
 
 function createApplication() {
-    function app(req, res) {
-        app.handleRequest(req, res);
-    }
+    var app = express();
 
-    mixin(app, proto);
-    mixin(app, EventEmitter.prototype);
-
-    app.providers = coreProviders;
-    app.singletons = [];
-    app.values = [];
-    app.handlers = [];
-    app.errorHandlers = [];
+    app.provide = function() {
+    };
 
     return app;
 }
