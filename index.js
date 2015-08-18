@@ -5,5 +5,5 @@ var inject = require("./lib/inject");
 
 module.exports = {
     provide: provide,
-    injet: inject
+    inject: inject
 };
