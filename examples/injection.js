@@ -18,7 +18,7 @@ app.use(molded.provide('user1', function(users) {
     return users['user1'];
 }));
 
-app.use(molded.provide('/:user', 'user', function(params, users) {
+app.use('/:user', molded.provide('user', function(params, users) {
     return users[params.user];
 }));
 
